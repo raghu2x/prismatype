@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+*.lcov
+
+# Logs
+logs
+*.log
+
+# Environment variables
+.env
+.env.*
+
+# Editor / OS
+.idea/
+.DS_Store
+
+# Prisma
+dmmf.json
+prisma/generated
+prisma/prismatype
+
+# Project
+playground

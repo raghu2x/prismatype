@@ -1,0 +1,114 @@
+import { type Static, Type } from "typebox";
+import { Value } from "typebox/value";
+
+const configSchema = Type.Object(
+  {
+    /**
+     * Where to output the generated files
+     */
+    output: Type.String({ default: "./prisma/prismatype" }),
+    /**
+     * The name of the variable to import the Type from typebox
+     */
+    typeboxImportVariableName: Type.String({ default: "Type" }),
+    /**
+     * The name of the dependency to import the Type from. Defaults to the
+     * unscoped "typebox" package (TypeBox >= 1.0). Change this to import from a
+     * re-export (e.g. "elysia") that exposes the same TypeBox 1.x API.
+     */
+    typeboxImportDependencyName: Type.String({ default: "typebox" }),
+    /**
+     * Whether to allow additional properties in the generated schemes
+     */
+    additionalProperties: Type.Boolean({ default: false }),
+    /**
+     * Should the input schemes be generated
+     */
+    inputModel: Type.Boolean({ default: false }),
+    /**
+     * Prevents the ID field from being generated in the input model
+     */
+    ignoreIdOnInputModel: Type.Boolean({ default: true }),
+    /**
+     * Prevents the createdAt field from being generated in the input model
+     */
+    ignoreCreatedAtOnInputModel: Type.Boolean({ default: true }),
+    /**
+     * Prevents the updatedAt field from being generated in the input model
+     */
+    ignoreUpdatedAtOnInputModel: Type.Boolean({ default: true }),
+    /**
+     * Prevents the foreignId field from being generated in the input model
+     */
+    ignoreForeignOnInputModel: Type.Boolean({ default: true }),
+    /**
+     * How the nullable union should be named
+     */
+    nullableName: Type.String({ default: "__nullable__" }),
+    /**
+     * Whether to allow recursion in the generated schemes (enabling reduces code size)
+     */
+    allowRecursion: Type.Boolean({ default: true }),
+    /**
+		 * Additional fields to add to the generated schemes (must be valid strings in the context of usage)
+	 * @example 
+	 * ```prisma
+	 * generator prismatype {
+			provider   = "node ./dist/cli.js"
+			 inputModel = true
+			 output     = "./generated/schema"
+			 additionalFieldsPlain = ["additional: Type.Optional(Type.String())"]
+		 }
+	 ```
+		 */
+    additionalFieldsPlain: Type.Optional(Type.Array(Type.String())),
+    /**
+     * How the transform date type should be named
+     */
+    transformDateName: Type.String({ default: "__transformDate__" }),
+    /**
+     * When enabled, this option ensures that only primitive types are generated as JSON types.
+     * This ensures compatibility with tooling that only supports the serilization to JSON primitive types.
+     *
+     * This can be false (off), true (will result in formatted string type) or "transformer" which will use Tybepox transformers
+     * to output native JS Date types but transforms those to strings on processing
+     *
+     * E.g. Date will be of Type String when enabled.
+     */
+    useJsonTypes: Type.Union([Type.Boolean(), Type.Literal("transformer")], {
+      default: false,
+    }),
+    /**
+     * What file extension, if any, to add to src file imports. Set to ".js" to support nodenext module resolution
+     */
+    importFileExtension: Type.String({ default: "" }),
+    /**
+     * The prefix to add to exported types
+     */
+    exportedTypePrefix: Type.String({ default: "" }),
+    /**
+     * The name of the file (without extension) that all generated enums are
+     * emitted into and imported from by model files
+     */
+    enumsFileName: Type.String({ default: "enums" }),
+  },
+  { additionalProperties: false },
+);
+
+// oxlint-disable-next-line typescript/no-explicit-any -- we want to set the default value
+let config: Static<typeof configSchema> = {} as unknown as any;
+
+export function setConfig(input: unknown) {
+  try {
+    Value.Clean(configSchema, input);
+    Value.Default(configSchema, input);
+    config = Value.Decode(configSchema, Value.Convert(configSchema, input));
+    Object.freeze(config);
+  } catch (error) {
+    console.error(Value.Errors(configSchema, input)[0]);
+    throw error;
+  }
+}
+export function getConfig() {
+  return config;
+}

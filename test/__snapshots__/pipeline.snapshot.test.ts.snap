@@ -1,0 +1,2174 @@
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+
+exports[`full output snapshots (rich schema) default config: every generated file 1`] = `
+{
+  "Account.ts": 
+"import { Type } from "typebox";
+
+import { __transformDate__ } from "./__transformDate__";
+
+import { __nullable__ } from "./__nullable__";
+
+import { Role, Status } from "./enums";
+
+export const AccountPlain = Type.Object(
+  {
+    id: Type.Integer(),
+    big: Type.Integer(),
+    ratio: Type.Number(),
+    balance: Type.Number(),
+    email: Type.String(),
+    active: Type.Boolean(),
+    payload: Type.Any(),
+    avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+    role: Role,
+    status: __nullable__(Status),
+    tags: Type.Array(Type.String(), { additionalProperties: false }),
+    bio: __nullable__(Type.String()),
+    nickname: __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+    external: Type.String({ format: "uuid" }),
+    createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+    updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+  },
+  { additionalProperties: false },
+);
+
+export const AccountRelations = Type.Object(
+  {
+    profiles: Type.Array(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const AccountWhere = Type.Partial(
+  Type.Recursive(
+    (Self) =>
+      Type.Object(
+        {
+          AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          OR: Type.Array(Self, { additionalProperties: false }),
+          id: Type.Integer(),
+          big: Type.Integer(),
+          ratio: Type.Number(),
+          balance: Type.Number(),
+          email: Type.String(),
+          active: Type.Boolean(),
+          payload: Type.Any(),
+          avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+          role: Role,
+          status: Status,
+          tags: Type.Array(Type.String(), { additionalProperties: false }),
+          bio: Type.String(),
+          nickname: Type.String({ maxLength: 32, description: \`The display name.\` }),
+          external: Type.String({ format: "uuid" }),
+          createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+          updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+        },
+        { additionalProperties: false },
+      ),
+    { $id: "Account" },
+  ),
+);
+
+export const AccountWhereUnique = Type.Recursive(
+  (Self) =>
+    Type.Intersect(
+      [
+        Type.Partial(
+          Type.Object(
+            { id: Type.Integer(), email: Type.String() },
+            { additionalProperties: false },
+          ),
+          { additionalProperties: false },
+        ),
+        Type.Union([Type.Object({ id: Type.Integer() }), Type.Object({ email: Type.String() })], {
+          additionalProperties: false,
+        }),
+        Type.Partial(
+          Type.Object({
+            AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            OR: Type.Array(Self, { additionalProperties: false }),
+          }),
+          { additionalProperties: false },
+        ),
+        Type.Partial(
+          Type.Object(
+            {
+              id: Type.Integer(),
+              big: Type.Integer(),
+              ratio: Type.Number(),
+              balance: Type.Number(),
+              email: Type.String(),
+              active: Type.Boolean(),
+              payload: Type.Any(),
+              avatar: Type.Refine(
+                Type.Unsafe<Uint8Array>({}),
+                (value) => value instanceof Uint8Array,
+              ),
+              role: Role,
+              status: Status,
+              tags: Type.Array(Type.String(), { additionalProperties: false }),
+              bio: Type.String(),
+              nickname: Type.String({ maxLength: 32, description: \`The display name.\` }),
+              external: Type.String({ format: "uuid" }),
+              createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+              updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+            },
+            { additionalProperties: false },
+          ),
+        ),
+      ],
+      { additionalProperties: false },
+    ),
+  { $id: "Account" },
+);
+
+export const AccountSelect = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Boolean(),
+      big: Type.Boolean(),
+      ratio: Type.Boolean(),
+      balance: Type.Boolean(),
+      email: Type.Boolean(),
+      active: Type.Boolean(),
+      payload: Type.Boolean(),
+      avatar: Type.Boolean(),
+      role: Type.Boolean(),
+      status: Type.Boolean(),
+      tags: Type.Boolean(),
+      bio: Type.Boolean(),
+      nickname: Type.Boolean(),
+      external: Type.Boolean(),
+      createdAt: Type.Boolean(),
+      updatedAt: Type.Boolean(),
+      profiles: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const AccountInclude = Type.Partial(
+  Type.Object(
+    {
+      role: Type.Boolean(),
+      status: Type.Boolean(),
+      profiles: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const AccountOrderBy = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Enum(["asc", "desc"]),
+      big: Type.Enum(["asc", "desc"]),
+      ratio: Type.Enum(["asc", "desc"]),
+      balance: Type.Enum(["asc", "desc"]),
+      email: Type.Enum(["asc", "desc"]),
+      active: Type.Enum(["asc", "desc"]),
+      payload: Type.Enum(["asc", "desc"]),
+      avatar: Type.Enum(["asc", "desc"]),
+      tags: Type.Enum(["asc", "desc"]),
+      bio: Type.Enum(["asc", "desc"]),
+      nickname: Type.Enum(["asc", "desc"]),
+      external: Type.Enum(["asc", "desc"]),
+      createdAt: Type.Enum(["asc", "desc"]),
+      updatedAt: Type.Enum(["asc", "desc"]),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const Account = Type.Evaluate(Type.Intersect([AccountPlain, AccountRelations]), {
+  additionalProperties: false,
+});
+"
+,
+  "Profile.ts": 
+"import { Type } from "typebox";
+
+import { __transformDate__ } from "./__transformDate__";
+
+import { __nullable__ } from "./__nullable__";
+
+import { Role, Status } from "./enums";
+
+export const ProfilePlain = Type.Object(
+  {
+    id: Type.Integer(),
+    headline: Type.String(),
+    accountId: Type.Integer(),
+    parentId: __nullable__(Type.Integer()),
+  },
+  { additionalProperties: false },
+);
+
+export const ProfileRelations = Type.Object(
+  {
+    account: Type.Object(
+      {
+        id: Type.Integer(),
+        big: Type.Integer(),
+        ratio: Type.Number(),
+        balance: Type.Number(),
+        email: Type.String(),
+        active: Type.Boolean(),
+        payload: Type.Any(),
+        avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+        role: Role,
+        status: __nullable__(Status),
+        tags: Type.Array(Type.String(), { additionalProperties: false }),
+        bio: __nullable__(Type.String()),
+        nickname: __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+        external: Type.String({ format: "uuid" }),
+        createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+        updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+      },
+      { additionalProperties: false },
+    ),
+    parent: __nullable__(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+    ),
+    children: Type.Array(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const ProfileWhere = Type.Partial(
+  Type.Recursive(
+    (Self) =>
+      Type.Object(
+        {
+          AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          OR: Type.Array(Self, { additionalProperties: false }),
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: Type.Integer(),
+        },
+        { additionalProperties: false },
+      ),
+    { $id: "Profile" },
+  ),
+);
+
+export const ProfileWhereUnique = Type.Recursive(
+  (Self) =>
+    Type.Intersect(
+      [
+        Type.Partial(Type.Object({ id: Type.Integer() }, { additionalProperties: false }), {
+          additionalProperties: false,
+        }),
+        Type.Union([Type.Object({ id: Type.Integer() })], { additionalProperties: false }),
+        Type.Partial(
+          Type.Object({
+            AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            OR: Type.Array(Self, { additionalProperties: false }),
+          }),
+          { additionalProperties: false },
+        ),
+        Type.Partial(
+          Type.Object(
+            {
+              id: Type.Integer(),
+              headline: Type.String(),
+              accountId: Type.Integer(),
+              parentId: Type.Integer(),
+            },
+            { additionalProperties: false },
+          ),
+        ),
+      ],
+      { additionalProperties: false },
+    ),
+  { $id: "Profile" },
+);
+
+export const ProfileSelect = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Boolean(),
+      headline: Type.Boolean(),
+      accountId: Type.Boolean(),
+      account: Type.Boolean(),
+      parentId: Type.Boolean(),
+      parent: Type.Boolean(),
+      children: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const ProfileInclude = Type.Partial(
+  Type.Object(
+    {
+      account: Type.Boolean(),
+      parent: Type.Boolean(),
+      children: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const ProfileOrderBy = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Enum(["asc", "desc"]),
+      headline: Type.Enum(["asc", "desc"]),
+      accountId: Type.Enum(["asc", "desc"]),
+      parentId: Type.Enum(["asc", "desc"]),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const Profile = Type.Evaluate(Type.Intersect([ProfilePlain, ProfileRelations]), {
+  additionalProperties: false,
+});
+"
+,
+  "__nullable__.ts": 
+"import { Type, type TSchema } from "typebox";
+export const __nullable__ = <T extends TSchema>(schema: T) => Type.Union([Type.Null(), schema]);
+"
+,
+  "__transformDate__.ts": 
+"import { Type } from "typebox";
+export const __transformDate__ = (options?: Parameters<typeof Type.String>[0]) =>
+  Type.Codec(Type.String({ format: "date-time", ...options }))
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.toISOString());
+"
+,
+  "barrel.ts": 
+"export * from "./Account";
+export * from "./Profile";
+export * from "./enums";
+export * from "./__nullable__";
+export * from "./__transformDate__";
+"
+,
+  "enums.ts": 
+"import { Type } from "typebox";
+
+export const Role = Type.Enum(["USER", "ADMIN"]);
+
+export const Status = Type.Enum(["ACTIVE", "SUSPENDED", "DELETED"]);
+"
+,
+}
+`;
+
+exports[`full output snapshots (rich schema) inputModel enabled: every generated file 1`] = `
+{
+  "Account.ts": 
+"import { Type } from "typebox";
+
+import { __transformDate__ } from "./__transformDate__";
+
+import { __nullable__ } from "./__nullable__";
+
+import { Role, Status } from "./enums";
+
+export const AccountPlain = Type.Object(
+  {
+    id: Type.Integer(),
+    big: Type.Integer(),
+    ratio: Type.Number(),
+    balance: Type.Number(),
+    email: Type.String(),
+    active: Type.Boolean(),
+    payload: Type.Any(),
+    avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+    role: Role,
+    status: __nullable__(Status),
+    tags: Type.Array(Type.String(), { additionalProperties: false }),
+    bio: __nullable__(Type.String()),
+    nickname: __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+    external: Type.String({ format: "uuid" }),
+    createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+    updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+  },
+  { additionalProperties: false },
+);
+
+export const AccountRelations = Type.Object(
+  {
+    profiles: Type.Array(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const AccountPlainInputCreate = Type.Object(
+  {
+    big: Type.Integer(),
+    ratio: Type.Number(),
+    balance: Type.Number(),
+    email: Type.String(),
+    active: Type.Optional(Type.Boolean()),
+    payload: Type.Any(),
+    avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+    role: Role,
+    status: Type.Optional(__nullable__(Status)),
+    tags: Type.Array(Type.String(), { additionalProperties: false }),
+    bio: Type.Optional(__nullable__(Type.String())),
+    nickname: Type.Optional(
+      __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+    ),
+    external: Type.String({ format: "uuid" }),
+  },
+  { additionalProperties: false },
+);
+
+export const AccountPlainInputUpdate = Type.Object(
+  {
+    big: Type.Optional(Type.Integer()),
+    ratio: Type.Optional(Type.Number()),
+    balance: Type.Optional(Type.Number()),
+    email: Type.Optional(Type.String()),
+    active: Type.Optional(Type.Boolean()),
+    payload: Type.Optional(Type.Any()),
+    avatar: Type.Optional(
+      Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+    ),
+    role: Type.Optional(Role),
+    status: Type.Optional(__nullable__(Status)),
+    tags: Type.Optional(Type.Array(Type.String(), { additionalProperties: false })),
+    bio: Type.Optional(__nullable__(Type.String())),
+    nickname: Type.Optional(
+      __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+    ),
+    external: Type.Optional(Type.String({ format: "uuid" })),
+  },
+  { additionalProperties: false },
+);
+
+export const AccountRelationsInputCreate = Type.Object(
+  {
+    profiles: Type.Optional(
+      Type.Object(
+        {
+          connect: Type.Array(
+            Type.Object(
+              {
+                id: Type.Integer({ additionalProperties: false }),
+              },
+              { additionalProperties: false },
+            ),
+            { additionalProperties: false },
+          ),
+        },
+        { additionalProperties: false },
+      ),
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const AccountRelationsInputUpdate = Type.Partial(
+  Type.Object(
+    {
+      profiles: Type.Partial(
+        Type.Object(
+          {
+            connect: Type.Array(
+              Type.Object(
+                {
+                  id: Type.Integer({ additionalProperties: false }),
+                },
+                { additionalProperties: false },
+              ),
+              { additionalProperties: false },
+            ),
+            disconnect: Type.Array(
+              Type.Object(
+                {
+                  id: Type.Integer({ additionalProperties: false }),
+                },
+                { additionalProperties: false },
+              ),
+              { additionalProperties: false },
+            ),
+          },
+          { additionalProperties: false },
+        ),
+      ),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const AccountWhere = Type.Partial(
+  Type.Recursive(
+    (Self) =>
+      Type.Object(
+        {
+          AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          OR: Type.Array(Self, { additionalProperties: false }),
+          id: Type.Integer(),
+          big: Type.Integer(),
+          ratio: Type.Number(),
+          balance: Type.Number(),
+          email: Type.String(),
+          active: Type.Boolean(),
+          payload: Type.Any(),
+          avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+          role: Role,
+          status: Status,
+          tags: Type.Array(Type.String(), { additionalProperties: false }),
+          bio: Type.String(),
+          nickname: Type.String({ maxLength: 32, description: \`The display name.\` }),
+          external: Type.String({ format: "uuid" }),
+          createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+          updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+        },
+        { additionalProperties: false },
+      ),
+    { $id: "Account" },
+  ),
+);
+
+export const AccountWhereUnique = Type.Recursive(
+  (Self) =>
+    Type.Intersect(
+      [
+        Type.Partial(
+          Type.Object(
+            { id: Type.Integer(), email: Type.String() },
+            { additionalProperties: false },
+          ),
+          { additionalProperties: false },
+        ),
+        Type.Union([Type.Object({ id: Type.Integer() }), Type.Object({ email: Type.String() })], {
+          additionalProperties: false,
+        }),
+        Type.Partial(
+          Type.Object({
+            AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            OR: Type.Array(Self, { additionalProperties: false }),
+          }),
+          { additionalProperties: false },
+        ),
+        Type.Partial(
+          Type.Object(
+            {
+              id: Type.Integer(),
+              big: Type.Integer(),
+              ratio: Type.Number(),
+              balance: Type.Number(),
+              email: Type.String(),
+              active: Type.Boolean(),
+              payload: Type.Any(),
+              avatar: Type.Refine(
+                Type.Unsafe<Uint8Array>({}),
+                (value) => value instanceof Uint8Array,
+              ),
+              role: Role,
+              status: Status,
+              tags: Type.Array(Type.String(), { additionalProperties: false }),
+              bio: Type.String(),
+              nickname: Type.String({ maxLength: 32, description: \`The display name.\` }),
+              external: Type.String({ format: "uuid" }),
+              createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+              updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+            },
+            { additionalProperties: false },
+          ),
+        ),
+      ],
+      { additionalProperties: false },
+    ),
+  { $id: "Account" },
+);
+
+export const AccountSelect = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Boolean(),
+      big: Type.Boolean(),
+      ratio: Type.Boolean(),
+      balance: Type.Boolean(),
+      email: Type.Boolean(),
+      active: Type.Boolean(),
+      payload: Type.Boolean(),
+      avatar: Type.Boolean(),
+      role: Type.Boolean(),
+      status: Type.Boolean(),
+      tags: Type.Boolean(),
+      bio: Type.Boolean(),
+      nickname: Type.Boolean(),
+      external: Type.Boolean(),
+      createdAt: Type.Boolean(),
+      updatedAt: Type.Boolean(),
+      profiles: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const AccountInclude = Type.Partial(
+  Type.Object(
+    {
+      role: Type.Boolean(),
+      status: Type.Boolean(),
+      profiles: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const AccountOrderBy = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Enum(["asc", "desc"]),
+      big: Type.Enum(["asc", "desc"]),
+      ratio: Type.Enum(["asc", "desc"]),
+      balance: Type.Enum(["asc", "desc"]),
+      email: Type.Enum(["asc", "desc"]),
+      active: Type.Enum(["asc", "desc"]),
+      payload: Type.Enum(["asc", "desc"]),
+      avatar: Type.Enum(["asc", "desc"]),
+      tags: Type.Enum(["asc", "desc"]),
+      bio: Type.Enum(["asc", "desc"]),
+      nickname: Type.Enum(["asc", "desc"]),
+      external: Type.Enum(["asc", "desc"]),
+      createdAt: Type.Enum(["asc", "desc"]),
+      updatedAt: Type.Enum(["asc", "desc"]),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const Account = Type.Evaluate(Type.Intersect([AccountPlain, AccountRelations]), {
+  additionalProperties: false,
+});
+
+export const AccountInputCreate = Type.Evaluate(
+  Type.Intersect([AccountPlainInputCreate, AccountRelationsInputCreate]),
+  { additionalProperties: false },
+);
+
+export const AccountInputUpdate = Type.Evaluate(
+  Type.Intersect([AccountPlainInputUpdate, AccountRelationsInputUpdate]),
+  { additionalProperties: false },
+);
+"
+,
+  "Profile.ts": 
+"import { Type } from "typebox";
+
+import { __transformDate__ } from "./__transformDate__";
+
+import { __nullable__ } from "./__nullable__";
+
+import { Role, Status } from "./enums";
+
+export const ProfilePlain = Type.Object(
+  {
+    id: Type.Integer(),
+    headline: Type.String(),
+    accountId: Type.Integer(),
+    parentId: __nullable__(Type.Integer()),
+  },
+  { additionalProperties: false },
+);
+
+export const ProfileRelations = Type.Object(
+  {
+    account: Type.Object(
+      {
+        id: Type.Integer(),
+        big: Type.Integer(),
+        ratio: Type.Number(),
+        balance: Type.Number(),
+        email: Type.String(),
+        active: Type.Boolean(),
+        payload: Type.Any(),
+        avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+        role: Role,
+        status: __nullable__(Status),
+        tags: Type.Array(Type.String(), { additionalProperties: false }),
+        bio: __nullable__(Type.String()),
+        nickname: __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+        external: Type.String({ format: "uuid" }),
+        createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+        updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+      },
+      { additionalProperties: false },
+    ),
+    parent: __nullable__(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+    ),
+    children: Type.Array(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const ProfilePlainInputCreate = Type.Object(
+  { headline: Type.String() },
+  { additionalProperties: false },
+);
+
+export const ProfilePlainInputUpdate = Type.Object(
+  { headline: Type.Optional(Type.String()) },
+  { additionalProperties: false },
+);
+
+export const ProfileRelationsInputCreate = Type.Object(
+  {
+    account: Type.Object(
+      {
+        connect: Type.Object(
+          {
+            id: Type.Integer({ additionalProperties: false }),
+          },
+          { additionalProperties: false },
+        ),
+      },
+      { additionalProperties: false },
+    ),
+    parent: Type.Optional(
+      Type.Object(
+        {
+          connect: Type.Object(
+            {
+              id: Type.Integer({ additionalProperties: false }),
+            },
+            { additionalProperties: false },
+          ),
+        },
+        { additionalProperties: false },
+      ),
+    ),
+    children: Type.Optional(
+      Type.Object(
+        {
+          connect: Type.Array(
+            Type.Object(
+              {
+                id: Type.Integer({ additionalProperties: false }),
+              },
+              { additionalProperties: false },
+            ),
+            { additionalProperties: false },
+          ),
+        },
+        { additionalProperties: false },
+      ),
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const ProfileRelationsInputUpdate = Type.Partial(
+  Type.Object(
+    {
+      account: Type.Object(
+        {
+          connect: Type.Object(
+            {
+              id: Type.Integer({ additionalProperties: false }),
+            },
+            { additionalProperties: false },
+          ),
+        },
+        { additionalProperties: false },
+      ),
+      parent: Type.Partial(
+        Type.Object(
+          {
+            connect: Type.Object(
+              {
+                id: Type.Integer({ additionalProperties: false }),
+              },
+              { additionalProperties: false },
+            ),
+            disconnect: Type.Boolean(),
+          },
+          { additionalProperties: false },
+        ),
+      ),
+      children: Type.Partial(
+        Type.Object(
+          {
+            connect: Type.Array(
+              Type.Object(
+                {
+                  id: Type.Integer({ additionalProperties: false }),
+                },
+                { additionalProperties: false },
+              ),
+              { additionalProperties: false },
+            ),
+            disconnect: Type.Array(
+              Type.Object(
+                {
+                  id: Type.Integer({ additionalProperties: false }),
+                },
+                { additionalProperties: false },
+              ),
+              { additionalProperties: false },
+            ),
+          },
+          { additionalProperties: false },
+        ),
+      ),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const ProfileWhere = Type.Partial(
+  Type.Recursive(
+    (Self) =>
+      Type.Object(
+        {
+          AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          OR: Type.Array(Self, { additionalProperties: false }),
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: Type.Integer(),
+        },
+        { additionalProperties: false },
+      ),
+    { $id: "Profile" },
+  ),
+);
+
+export const ProfileWhereUnique = Type.Recursive(
+  (Self) =>
+    Type.Intersect(
+      [
+        Type.Partial(Type.Object({ id: Type.Integer() }, { additionalProperties: false }), {
+          additionalProperties: false,
+        }),
+        Type.Union([Type.Object({ id: Type.Integer() })], { additionalProperties: false }),
+        Type.Partial(
+          Type.Object({
+            AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            OR: Type.Array(Self, { additionalProperties: false }),
+          }),
+          { additionalProperties: false },
+        ),
+        Type.Partial(
+          Type.Object(
+            {
+              id: Type.Integer(),
+              headline: Type.String(),
+              accountId: Type.Integer(),
+              parentId: Type.Integer(),
+            },
+            { additionalProperties: false },
+          ),
+        ),
+      ],
+      { additionalProperties: false },
+    ),
+  { $id: "Profile" },
+);
+
+export const ProfileSelect = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Boolean(),
+      headline: Type.Boolean(),
+      accountId: Type.Boolean(),
+      account: Type.Boolean(),
+      parentId: Type.Boolean(),
+      parent: Type.Boolean(),
+      children: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const ProfileInclude = Type.Partial(
+  Type.Object(
+    {
+      account: Type.Boolean(),
+      parent: Type.Boolean(),
+      children: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const ProfileOrderBy = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Enum(["asc", "desc"]),
+      headline: Type.Enum(["asc", "desc"]),
+      accountId: Type.Enum(["asc", "desc"]),
+      parentId: Type.Enum(["asc", "desc"]),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const Profile = Type.Evaluate(Type.Intersect([ProfilePlain, ProfileRelations]), {
+  additionalProperties: false,
+});
+
+export const ProfileInputCreate = Type.Evaluate(
+  Type.Intersect([ProfilePlainInputCreate, ProfileRelationsInputCreate]),
+  { additionalProperties: false },
+);
+
+export const ProfileInputUpdate = Type.Evaluate(
+  Type.Intersect([ProfilePlainInputUpdate, ProfileRelationsInputUpdate]),
+  { additionalProperties: false },
+);
+"
+,
+  "__nullable__.ts": 
+"import { Type, type TSchema } from "typebox";
+export const __nullable__ = <T extends TSchema>(schema: T) => Type.Union([Type.Null(), schema]);
+"
+,
+  "__transformDate__.ts": 
+"import { Type } from "typebox";
+export const __transformDate__ = (options?: Parameters<typeof Type.String>[0]) =>
+  Type.Codec(Type.String({ format: "date-time", ...options }))
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.toISOString());
+"
+,
+  "barrel.ts": 
+"export * from "./Account";
+export * from "./Profile";
+export * from "./enums";
+export * from "./__nullable__";
+export * from "./__transformDate__";
+"
+,
+  "enums.ts": 
+"import { Type } from "typebox";
+
+export const Role = Type.Enum(["USER", "ADMIN"]);
+
+export const Status = Type.Enum(["ACTIVE", "SUSPENDED", "DELETED"]);
+"
+,
+}
+`;
+
+exports[`full output snapshots (rich schema) useJsonTypes=true: DateTime becomes a formatted string 1`] = `
+{
+  "Account.ts": 
+"import { Type } from "typebox";
+
+import { __transformDate__ } from "./__transformDate__";
+
+import { __nullable__ } from "./__nullable__";
+
+import { Role, Status } from "./enums";
+
+export const AccountPlain = Type.Object(
+  {
+    id: Type.Integer(),
+    big: Type.Integer(),
+    ratio: Type.Number(),
+    balance: Type.Number(),
+    email: Type.String(),
+    active: Type.Boolean(),
+    payload: Type.Any(),
+    avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+    role: Role,
+    status: __nullable__(Status),
+    tags: Type.Array(Type.String(), { additionalProperties: false }),
+    bio: __nullable__(Type.String()),
+    nickname: __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+    external: Type.String({ format: "uuid" }),
+    createdAt: Type.String({ format: "date-time" }),
+    updatedAt: Type.String({ format: "date-time" }),
+  },
+  { additionalProperties: false },
+);
+
+export const AccountRelations = Type.Object(
+  {
+    profiles: Type.Array(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const AccountWhere = Type.Partial(
+  Type.Recursive(
+    (Self) =>
+      Type.Object(
+        {
+          AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          OR: Type.Array(Self, { additionalProperties: false }),
+          id: Type.Integer(),
+          big: Type.Integer(),
+          ratio: Type.Number(),
+          balance: Type.Number(),
+          email: Type.String(),
+          active: Type.Boolean(),
+          payload: Type.Any(),
+          avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+          role: Role,
+          status: Status,
+          tags: Type.Array(Type.String(), { additionalProperties: false }),
+          bio: Type.String(),
+          nickname: Type.String({ maxLength: 32, description: \`The display name.\` }),
+          external: Type.String({ format: "uuid" }),
+          createdAt: Type.String({ format: "date-time" }),
+          updatedAt: Type.String({ format: "date-time" }),
+        },
+        { additionalProperties: false },
+      ),
+    { $id: "Account" },
+  ),
+);
+
+export const AccountWhereUnique = Type.Recursive(
+  (Self) =>
+    Type.Intersect(
+      [
+        Type.Partial(
+          Type.Object(
+            { id: Type.Integer(), email: Type.String() },
+            { additionalProperties: false },
+          ),
+          { additionalProperties: false },
+        ),
+        Type.Union([Type.Object({ id: Type.Integer() }), Type.Object({ email: Type.String() })], {
+          additionalProperties: false,
+        }),
+        Type.Partial(
+          Type.Object({
+            AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            OR: Type.Array(Self, { additionalProperties: false }),
+          }),
+          { additionalProperties: false },
+        ),
+        Type.Partial(
+          Type.Object(
+            {
+              id: Type.Integer(),
+              big: Type.Integer(),
+              ratio: Type.Number(),
+              balance: Type.Number(),
+              email: Type.String(),
+              active: Type.Boolean(),
+              payload: Type.Any(),
+              avatar: Type.Refine(
+                Type.Unsafe<Uint8Array>({}),
+                (value) => value instanceof Uint8Array,
+              ),
+              role: Role,
+              status: Status,
+              tags: Type.Array(Type.String(), { additionalProperties: false }),
+              bio: Type.String(),
+              nickname: Type.String({ maxLength: 32, description: \`The display name.\` }),
+              external: Type.String({ format: "uuid" }),
+              createdAt: Type.String({ format: "date-time" }),
+              updatedAt: Type.String({ format: "date-time" }),
+            },
+            { additionalProperties: false },
+          ),
+        ),
+      ],
+      { additionalProperties: false },
+    ),
+  { $id: "Account" },
+);
+
+export const AccountSelect = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Boolean(),
+      big: Type.Boolean(),
+      ratio: Type.Boolean(),
+      balance: Type.Boolean(),
+      email: Type.Boolean(),
+      active: Type.Boolean(),
+      payload: Type.Boolean(),
+      avatar: Type.Boolean(),
+      role: Type.Boolean(),
+      status: Type.Boolean(),
+      tags: Type.Boolean(),
+      bio: Type.Boolean(),
+      nickname: Type.Boolean(),
+      external: Type.Boolean(),
+      createdAt: Type.Boolean(),
+      updatedAt: Type.Boolean(),
+      profiles: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const AccountInclude = Type.Partial(
+  Type.Object(
+    {
+      role: Type.Boolean(),
+      status: Type.Boolean(),
+      profiles: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const AccountOrderBy = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Enum(["asc", "desc"]),
+      big: Type.Enum(["asc", "desc"]),
+      ratio: Type.Enum(["asc", "desc"]),
+      balance: Type.Enum(["asc", "desc"]),
+      email: Type.Enum(["asc", "desc"]),
+      active: Type.Enum(["asc", "desc"]),
+      payload: Type.Enum(["asc", "desc"]),
+      avatar: Type.Enum(["asc", "desc"]),
+      tags: Type.Enum(["asc", "desc"]),
+      bio: Type.Enum(["asc", "desc"]),
+      nickname: Type.Enum(["asc", "desc"]),
+      external: Type.Enum(["asc", "desc"]),
+      createdAt: Type.Enum(["asc", "desc"]),
+      updatedAt: Type.Enum(["asc", "desc"]),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const Account = Type.Evaluate(Type.Intersect([AccountPlain, AccountRelations]), {
+  additionalProperties: false,
+});
+"
+,
+  "Profile.ts": 
+"import { Type } from "typebox";
+
+import { __transformDate__ } from "./__transformDate__";
+
+import { __nullable__ } from "./__nullable__";
+
+import { Role, Status } from "./enums";
+
+export const ProfilePlain = Type.Object(
+  {
+    id: Type.Integer(),
+    headline: Type.String(),
+    accountId: Type.Integer(),
+    parentId: __nullable__(Type.Integer()),
+  },
+  { additionalProperties: false },
+);
+
+export const ProfileRelations = Type.Object(
+  {
+    account: Type.Object(
+      {
+        id: Type.Integer(),
+        big: Type.Integer(),
+        ratio: Type.Number(),
+        balance: Type.Number(),
+        email: Type.String(),
+        active: Type.Boolean(),
+        payload: Type.Any(),
+        avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+        role: Role,
+        status: __nullable__(Status),
+        tags: Type.Array(Type.String(), { additionalProperties: false }),
+        bio: __nullable__(Type.String()),
+        nickname: __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+        external: Type.String({ format: "uuid" }),
+        createdAt: Type.String({ format: "date-time" }),
+        updatedAt: Type.String({ format: "date-time" }),
+      },
+      { additionalProperties: false },
+    ),
+    parent: __nullable__(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+    ),
+    children: Type.Array(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const ProfileWhere = Type.Partial(
+  Type.Recursive(
+    (Self) =>
+      Type.Object(
+        {
+          AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          OR: Type.Array(Self, { additionalProperties: false }),
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: Type.Integer(),
+        },
+        { additionalProperties: false },
+      ),
+    { $id: "Profile" },
+  ),
+);
+
+export const ProfileWhereUnique = Type.Recursive(
+  (Self) =>
+    Type.Intersect(
+      [
+        Type.Partial(Type.Object({ id: Type.Integer() }, { additionalProperties: false }), {
+          additionalProperties: false,
+        }),
+        Type.Union([Type.Object({ id: Type.Integer() })], { additionalProperties: false }),
+        Type.Partial(
+          Type.Object({
+            AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            OR: Type.Array(Self, { additionalProperties: false }),
+          }),
+          { additionalProperties: false },
+        ),
+        Type.Partial(
+          Type.Object(
+            {
+              id: Type.Integer(),
+              headline: Type.String(),
+              accountId: Type.Integer(),
+              parentId: Type.Integer(),
+            },
+            { additionalProperties: false },
+          ),
+        ),
+      ],
+      { additionalProperties: false },
+    ),
+  { $id: "Profile" },
+);
+
+export const ProfileSelect = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Boolean(),
+      headline: Type.Boolean(),
+      accountId: Type.Boolean(),
+      account: Type.Boolean(),
+      parentId: Type.Boolean(),
+      parent: Type.Boolean(),
+      children: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const ProfileInclude = Type.Partial(
+  Type.Object(
+    {
+      account: Type.Boolean(),
+      parent: Type.Boolean(),
+      children: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const ProfileOrderBy = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Enum(["asc", "desc"]),
+      headline: Type.Enum(["asc", "desc"]),
+      accountId: Type.Enum(["asc", "desc"]),
+      parentId: Type.Enum(["asc", "desc"]),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const Profile = Type.Evaluate(Type.Intersect([ProfilePlain, ProfileRelations]), {
+  additionalProperties: false,
+});
+"
+,
+  "__nullable__.ts": 
+"import { Type, type TSchema } from "typebox";
+export const __nullable__ = <T extends TSchema>(schema: T) => Type.Union([Type.Null(), schema]);
+"
+,
+  "__transformDate__.ts": 
+"import { Type } from "typebox";
+export const __transformDate__ = (options?: Parameters<typeof Type.String>[0]) =>
+  Type.Codec(Type.String({ format: "date-time", ...options }))
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.toISOString());
+"
+,
+  "barrel.ts": 
+"export * from "./Account";
+export * from "./Profile";
+export * from "./enums";
+export * from "./__nullable__";
+export * from "./__transformDate__";
+"
+,
+  "enums.ts": 
+"import { Type } from "typebox";
+
+export const Role = Type.Enum(["USER", "ADMIN"]);
+
+export const Status = Type.Enum(["ACTIVE", "SUSPENDED", "DELETED"]);
+"
+,
+}
+`;
+
+exports[`full output snapshots (rich schema) useJsonTypes="transformer": DateTime uses the __transformDate__ codec 1`] = `
+{
+  "Account.ts": 
+"import { Type } from "typebox";
+
+import { __transformDate__ } from "./__transformDate__";
+
+import { __nullable__ } from "./__nullable__";
+
+import { Role, Status } from "./enums";
+
+export const AccountPlain = Type.Object(
+  {
+    id: Type.Integer(),
+    big: Type.Integer(),
+    ratio: Type.Number(),
+    balance: Type.Number(),
+    email: Type.String(),
+    active: Type.Boolean(),
+    payload: Type.Any(),
+    avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+    role: Role,
+    status: __nullable__(Status),
+    tags: Type.Array(Type.String(), { additionalProperties: false }),
+    bio: __nullable__(Type.String()),
+    nickname: __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+    external: Type.String({ format: "uuid" }),
+    createdAt: __transformDate__(),
+    updatedAt: __transformDate__(),
+  },
+  { additionalProperties: false },
+);
+
+export const AccountRelations = Type.Object(
+  {
+    profiles: Type.Array(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const AccountWhere = Type.Partial(
+  Type.Recursive(
+    (Self) =>
+      Type.Object(
+        {
+          AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          OR: Type.Array(Self, { additionalProperties: false }),
+          id: Type.Integer(),
+          big: Type.Integer(),
+          ratio: Type.Number(),
+          balance: Type.Number(),
+          email: Type.String(),
+          active: Type.Boolean(),
+          payload: Type.Any(),
+          avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+          role: Role,
+          status: Status,
+          tags: Type.Array(Type.String(), { additionalProperties: false }),
+          bio: Type.String(),
+          nickname: Type.String({ maxLength: 32, description: \`The display name.\` }),
+          external: Type.String({ format: "uuid" }),
+          createdAt: __transformDate__(),
+          updatedAt: __transformDate__(),
+        },
+        { additionalProperties: false },
+      ),
+    { $id: "Account" },
+  ),
+);
+
+export const AccountWhereUnique = Type.Recursive(
+  (Self) =>
+    Type.Intersect(
+      [
+        Type.Partial(
+          Type.Object(
+            { id: Type.Integer(), email: Type.String() },
+            { additionalProperties: false },
+          ),
+          { additionalProperties: false },
+        ),
+        Type.Union([Type.Object({ id: Type.Integer() }), Type.Object({ email: Type.String() })], {
+          additionalProperties: false,
+        }),
+        Type.Partial(
+          Type.Object({
+            AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            OR: Type.Array(Self, { additionalProperties: false }),
+          }),
+          { additionalProperties: false },
+        ),
+        Type.Partial(
+          Type.Object(
+            {
+              id: Type.Integer(),
+              big: Type.Integer(),
+              ratio: Type.Number(),
+              balance: Type.Number(),
+              email: Type.String(),
+              active: Type.Boolean(),
+              payload: Type.Any(),
+              avatar: Type.Refine(
+                Type.Unsafe<Uint8Array>({}),
+                (value) => value instanceof Uint8Array,
+              ),
+              role: Role,
+              status: Status,
+              tags: Type.Array(Type.String(), { additionalProperties: false }),
+              bio: Type.String(),
+              nickname: Type.String({ maxLength: 32, description: \`The display name.\` }),
+              external: Type.String({ format: "uuid" }),
+              createdAt: __transformDate__(),
+              updatedAt: __transformDate__(),
+            },
+            { additionalProperties: false },
+          ),
+        ),
+      ],
+      { additionalProperties: false },
+    ),
+  { $id: "Account" },
+);
+
+export const AccountSelect = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Boolean(),
+      big: Type.Boolean(),
+      ratio: Type.Boolean(),
+      balance: Type.Boolean(),
+      email: Type.Boolean(),
+      active: Type.Boolean(),
+      payload: Type.Boolean(),
+      avatar: Type.Boolean(),
+      role: Type.Boolean(),
+      status: Type.Boolean(),
+      tags: Type.Boolean(),
+      bio: Type.Boolean(),
+      nickname: Type.Boolean(),
+      external: Type.Boolean(),
+      createdAt: Type.Boolean(),
+      updatedAt: Type.Boolean(),
+      profiles: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const AccountInclude = Type.Partial(
+  Type.Object(
+    {
+      role: Type.Boolean(),
+      status: Type.Boolean(),
+      profiles: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const AccountOrderBy = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Enum(["asc", "desc"]),
+      big: Type.Enum(["asc", "desc"]),
+      ratio: Type.Enum(["asc", "desc"]),
+      balance: Type.Enum(["asc", "desc"]),
+      email: Type.Enum(["asc", "desc"]),
+      active: Type.Enum(["asc", "desc"]),
+      payload: Type.Enum(["asc", "desc"]),
+      avatar: Type.Enum(["asc", "desc"]),
+      tags: Type.Enum(["asc", "desc"]),
+      bio: Type.Enum(["asc", "desc"]),
+      nickname: Type.Enum(["asc", "desc"]),
+      external: Type.Enum(["asc", "desc"]),
+      createdAt: Type.Enum(["asc", "desc"]),
+      updatedAt: Type.Enum(["asc", "desc"]),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const Account = Type.Evaluate(Type.Intersect([AccountPlain, AccountRelations]), {
+  additionalProperties: false,
+});
+"
+,
+  "Profile.ts": 
+"import { Type } from "typebox";
+
+import { __transformDate__ } from "./__transformDate__";
+
+import { __nullable__ } from "./__nullable__";
+
+import { Role, Status } from "./enums";
+
+export const ProfilePlain = Type.Object(
+  {
+    id: Type.Integer(),
+    headline: Type.String(),
+    accountId: Type.Integer(),
+    parentId: __nullable__(Type.Integer()),
+  },
+  { additionalProperties: false },
+);
+
+export const ProfileRelations = Type.Object(
+  {
+    account: Type.Object(
+      {
+        id: Type.Integer(),
+        big: Type.Integer(),
+        ratio: Type.Number(),
+        balance: Type.Number(),
+        email: Type.String(),
+        active: Type.Boolean(),
+        payload: Type.Any(),
+        avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+        role: Role,
+        status: __nullable__(Status),
+        tags: Type.Array(Type.String(), { additionalProperties: false }),
+        bio: __nullable__(Type.String()),
+        nickname: __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+        external: Type.String({ format: "uuid" }),
+        createdAt: __transformDate__(),
+        updatedAt: __transformDate__(),
+      },
+      { additionalProperties: false },
+    ),
+    parent: __nullable__(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+    ),
+    children: Type.Array(
+      Type.Object(
+        {
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: __nullable__(Type.Integer()),
+        },
+        { additionalProperties: false },
+      ),
+      { additionalProperties: false },
+    ),
+  },
+  { additionalProperties: false },
+);
+
+export const ProfileWhere = Type.Partial(
+  Type.Recursive(
+    (Self) =>
+      Type.Object(
+        {
+          AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+          OR: Type.Array(Self, { additionalProperties: false }),
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: Type.Integer(),
+        },
+        { additionalProperties: false },
+      ),
+    { $id: "Profile" },
+  ),
+);
+
+export const ProfileWhereUnique = Type.Recursive(
+  (Self) =>
+    Type.Intersect(
+      [
+        Type.Partial(Type.Object({ id: Type.Integer() }, { additionalProperties: false }), {
+          additionalProperties: false,
+        }),
+        Type.Union([Type.Object({ id: Type.Integer() })], { additionalProperties: false }),
+        Type.Partial(
+          Type.Object({
+            AND: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: false })]),
+            OR: Type.Array(Self, { additionalProperties: false }),
+          }),
+          { additionalProperties: false },
+        ),
+        Type.Partial(
+          Type.Object(
+            {
+              id: Type.Integer(),
+              headline: Type.String(),
+              accountId: Type.Integer(),
+              parentId: Type.Integer(),
+            },
+            { additionalProperties: false },
+          ),
+        ),
+      ],
+      { additionalProperties: false },
+    ),
+  { $id: "Profile" },
+);
+
+export const ProfileSelect = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Boolean(),
+      headline: Type.Boolean(),
+      accountId: Type.Boolean(),
+      account: Type.Boolean(),
+      parentId: Type.Boolean(),
+      parent: Type.Boolean(),
+      children: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const ProfileInclude = Type.Partial(
+  Type.Object(
+    {
+      account: Type.Boolean(),
+      parent: Type.Boolean(),
+      children: Type.Boolean(),
+      _count: Type.Boolean(),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const ProfileOrderBy = Type.Partial(
+  Type.Object(
+    {
+      id: Type.Enum(["asc", "desc"]),
+      headline: Type.Enum(["asc", "desc"]),
+      accountId: Type.Enum(["asc", "desc"]),
+      parentId: Type.Enum(["asc", "desc"]),
+    },
+    { additionalProperties: false },
+  ),
+);
+
+export const Profile = Type.Evaluate(Type.Intersect([ProfilePlain, ProfileRelations]), {
+  additionalProperties: false,
+});
+"
+,
+  "__nullable__.ts": 
+"import { Type, type TSchema } from "typebox";
+export const __nullable__ = <T extends TSchema>(schema: T) => Type.Union([Type.Null(), schema]);
+"
+,
+  "__transformDate__.ts": 
+"import { Type } from "typebox";
+export const __transformDate__ = (options?: Parameters<typeof Type.String>[0]) =>
+  Type.Codec(Type.String({ format: "date-time", ...options }))
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.toISOString());
+"
+,
+  "barrel.ts": 
+"export * from "./Account";
+export * from "./Profile";
+export * from "./enums";
+export * from "./__nullable__";
+export * from "./__transformDate__";
+"
+,
+  "enums.ts": 
+"import { Type } from "typebox";
+
+export const Role = Type.Enum(["USER", "ADMIN"]);
+
+export const Status = Type.Enum(["ACTIVE", "SUSPENDED", "DELETED"]);
+"
+,
+}
+`;
+
+exports[`full output snapshots (rich schema) additionalProperties=true: objects allow extra keys 1`] = `
+{
+  "Account.ts": 
+"import { Type } from "typebox";
+
+import { __transformDate__ } from "./__transformDate__";
+
+import { __nullable__ } from "./__nullable__";
+
+import { Role, Status } from "./enums";
+
+export const AccountPlain = Type.Object({
+  id: Type.Integer(),
+  big: Type.Integer(),
+  ratio: Type.Number(),
+  balance: Type.Number(),
+  email: Type.String(),
+  active: Type.Boolean(),
+  payload: Type.Any(),
+  avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+  role: Role,
+  status: __nullable__(Status),
+  tags: Type.Array(Type.String(), { additionalProperties: true }),
+  bio: __nullable__(Type.String()),
+  nickname: __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+  external: Type.String({ format: "uuid" }),
+  createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+  updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+});
+
+export const AccountRelations = Type.Object({
+  profiles: Type.Array(
+    Type.Object({
+      id: Type.Integer(),
+      headline: Type.String(),
+      accountId: Type.Integer(),
+      parentId: __nullable__(Type.Integer()),
+    }),
+    { additionalProperties: true },
+  ),
+});
+
+export const AccountWhere = Type.Partial(
+  Type.Recursive(
+    (Self) =>
+      Type.Object(
+        {
+          AND: Type.Union([Self, Type.Array(Self, { additionalProperties: true })]),
+          NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: true })]),
+          OR: Type.Array(Self, { additionalProperties: true }),
+          id: Type.Integer(),
+          big: Type.Integer(),
+          ratio: Type.Number(),
+          balance: Type.Number(),
+          email: Type.String(),
+          active: Type.Boolean(),
+          payload: Type.Any(),
+          avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+          role: Role,
+          status: Status,
+          tags: Type.Array(Type.String(), { additionalProperties: true }),
+          bio: Type.String(),
+          nickname: Type.String({ maxLength: 32, description: \`The display name.\` }),
+          external: Type.String({ format: "uuid" }),
+          createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+          updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+        },
+        { additionalProperties: true },
+      ),
+    { $id: "Account" },
+  ),
+);
+
+export const AccountWhereUnique = Type.Recursive(
+  (Self) =>
+    Type.Intersect(
+      [
+        Type.Partial(
+          Type.Object({ id: Type.Integer(), email: Type.String() }, { additionalProperties: true }),
+          { additionalProperties: true },
+        ),
+        Type.Union([Type.Object({ id: Type.Integer() }), Type.Object({ email: Type.String() })], {
+          additionalProperties: true,
+        }),
+        Type.Partial(
+          Type.Object({
+            AND: Type.Union([Self, Type.Array(Self, { additionalProperties: true })]),
+            NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: true })]),
+            OR: Type.Array(Self, { additionalProperties: true }),
+          }),
+          { additionalProperties: true },
+        ),
+        Type.Partial(
+          Type.Object({
+            id: Type.Integer(),
+            big: Type.Integer(),
+            ratio: Type.Number(),
+            balance: Type.Number(),
+            email: Type.String(),
+            active: Type.Boolean(),
+            payload: Type.Any(),
+            avatar: Type.Refine(
+              Type.Unsafe<Uint8Array>({}),
+              (value) => value instanceof Uint8Array,
+            ),
+            role: Role,
+            status: Status,
+            tags: Type.Array(Type.String(), { additionalProperties: true }),
+            bio: Type.String(),
+            nickname: Type.String({ maxLength: 32, description: \`The display name.\` }),
+            external: Type.String({ format: "uuid" }),
+            createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+            updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+          }),
+        ),
+      ],
+      { additionalProperties: true },
+    ),
+  { $id: "Account" },
+);
+
+export const AccountSelect = Type.Partial(
+  Type.Object({
+    id: Type.Boolean(),
+    big: Type.Boolean(),
+    ratio: Type.Boolean(),
+    balance: Type.Boolean(),
+    email: Type.Boolean(),
+    active: Type.Boolean(),
+    payload: Type.Boolean(),
+    avatar: Type.Boolean(),
+    role: Type.Boolean(),
+    status: Type.Boolean(),
+    tags: Type.Boolean(),
+    bio: Type.Boolean(),
+    nickname: Type.Boolean(),
+    external: Type.Boolean(),
+    createdAt: Type.Boolean(),
+    updatedAt: Type.Boolean(),
+    profiles: Type.Boolean(),
+    _count: Type.Boolean(),
+  }),
+);
+
+export const AccountInclude = Type.Partial(
+  Type.Object({
+    role: Type.Boolean(),
+    status: Type.Boolean(),
+    profiles: Type.Boolean(),
+    _count: Type.Boolean(),
+  }),
+);
+
+export const AccountOrderBy = Type.Partial(
+  Type.Object({
+    id: Type.Enum(["asc", "desc"]),
+    big: Type.Enum(["asc", "desc"]),
+    ratio: Type.Enum(["asc", "desc"]),
+    balance: Type.Enum(["asc", "desc"]),
+    email: Type.Enum(["asc", "desc"]),
+    active: Type.Enum(["asc", "desc"]),
+    payload: Type.Enum(["asc", "desc"]),
+    avatar: Type.Enum(["asc", "desc"]),
+    tags: Type.Enum(["asc", "desc"]),
+    bio: Type.Enum(["asc", "desc"]),
+    nickname: Type.Enum(["asc", "desc"]),
+    external: Type.Enum(["asc", "desc"]),
+    createdAt: Type.Enum(["asc", "desc"]),
+    updatedAt: Type.Enum(["asc", "desc"]),
+  }),
+);
+
+export const Account = Type.Evaluate(Type.Intersect([AccountPlain, AccountRelations]));
+"
+,
+  "Profile.ts": 
+"import { Type } from "typebox";
+
+import { __transformDate__ } from "./__transformDate__";
+
+import { __nullable__ } from "./__nullable__";
+
+import { Role, Status } from "./enums";
+
+export const ProfilePlain = Type.Object({
+  id: Type.Integer(),
+  headline: Type.String(),
+  accountId: Type.Integer(),
+  parentId: __nullable__(Type.Integer()),
+});
+
+export const ProfileRelations = Type.Object({
+  account: Type.Object({
+    id: Type.Integer(),
+    big: Type.Integer(),
+    ratio: Type.Number(),
+    balance: Type.Number(),
+    email: Type.String(),
+    active: Type.Boolean(),
+    payload: Type.Any(),
+    avatar: Type.Refine(Type.Unsafe<Uint8Array>({}), (value) => value instanceof Uint8Array),
+    role: Role,
+    status: __nullable__(Status),
+    tags: Type.Array(Type.String(), { additionalProperties: true }),
+    bio: __nullable__(Type.String()),
+    nickname: __nullable__(Type.String({ maxLength: 32, description: \`The display name.\` })),
+    external: Type.String({ format: "uuid" }),
+    createdAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+    updatedAt: Type.Refine(Type.Unsafe<Date>({}), (value) => value instanceof Date),
+  }),
+  parent: __nullable__(
+    Type.Object({
+      id: Type.Integer(),
+      headline: Type.String(),
+      accountId: Type.Integer(),
+      parentId: __nullable__(Type.Integer()),
+    }),
+  ),
+  children: Type.Array(
+    Type.Object({
+      id: Type.Integer(),
+      headline: Type.String(),
+      accountId: Type.Integer(),
+      parentId: __nullable__(Type.Integer()),
+    }),
+    { additionalProperties: true },
+  ),
+});
+
+export const ProfileWhere = Type.Partial(
+  Type.Recursive(
+    (Self) =>
+      Type.Object(
+        {
+          AND: Type.Union([Self, Type.Array(Self, { additionalProperties: true })]),
+          NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: true })]),
+          OR: Type.Array(Self, { additionalProperties: true }),
+          id: Type.Integer(),
+          headline: Type.String(),
+          accountId: Type.Integer(),
+          parentId: Type.Integer(),
+        },
+        { additionalProperties: true },
+      ),
+    { $id: "Profile" },
+  ),
+);
+
+export const ProfileWhereUnique = Type.Recursive(
+  (Self) =>
+    Type.Intersect(
+      [
+        Type.Partial(Type.Object({ id: Type.Integer() }, { additionalProperties: true }), {
+          additionalProperties: true,
+        }),
+        Type.Union([Type.Object({ id: Type.Integer() })], { additionalProperties: true }),
+        Type.Partial(
+          Type.Object({
+            AND: Type.Union([Self, Type.Array(Self, { additionalProperties: true })]),
+            NOT: Type.Union([Self, Type.Array(Self, { additionalProperties: true })]),
+            OR: Type.Array(Self, { additionalProperties: true }),
+          }),
+          { additionalProperties: true },
+        ),
+        Type.Partial(
+          Type.Object({
+            id: Type.Integer(),
+            headline: Type.String(),
+            accountId: Type.Integer(),
+            parentId: Type.Integer(),
+          }),
+        ),
+      ],
+      { additionalProperties: true },
+    ),
+  { $id: "Profile" },
+);
+
+export const ProfileSelect = Type.Partial(
+  Type.Object({
+    id: Type.Boolean(),
+    headline: Type.Boolean(),
+    accountId: Type.Boolean(),
+    account: Type.Boolean(),
+    parentId: Type.Boolean(),
+    parent: Type.Boolean(),
+    children: Type.Boolean(),
+    _count: Type.Boolean(),
+  }),
+);
+
+export const ProfileInclude = Type.Partial(
+  Type.Object({
+    account: Type.Boolean(),
+    parent: Type.Boolean(),
+    children: Type.Boolean(),
+    _count: Type.Boolean(),
+  }),
+);
+
+export const ProfileOrderBy = Type.Partial(
+  Type.Object({
+    id: Type.Enum(["asc", "desc"]),
+    headline: Type.Enum(["asc", "desc"]),
+    accountId: Type.Enum(["asc", "desc"]),
+    parentId: Type.Enum(["asc", "desc"]),
+  }),
+);
+
+export const Profile = Type.Evaluate(Type.Intersect([ProfilePlain, ProfileRelations]));
+"
+,
+  "__nullable__.ts": 
+"import { Type, type TSchema } from "typebox";
+export const __nullable__ = <T extends TSchema>(schema: T) => Type.Union([Type.Null(), schema]);
+"
+,
+  "__transformDate__.ts": 
+"import { Type } from "typebox";
+export const __transformDate__ = (options?: Parameters<typeof Type.String>[0]) =>
+  Type.Codec(Type.String({ format: "date-time", ...options }))
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.toISOString());
+"
+,
+  "barrel.ts": 
+"export * from "./Account";
+export * from "./Profile";
+export * from "./enums";
+export * from "./__nullable__";
+export * from "./__transformDate__";
+"
+,
+  "enums.ts": 
+"import { Type } from "typebox";
+
+export const Role = Type.Enum(["USER", "ADMIN"]);
+
+export const Status = Type.Enum(["ACTIVE", "SUSPENDED", "DELETED"]);
+"
+,
+}
+`;
