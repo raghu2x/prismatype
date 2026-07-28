@@ -52,6 +52,10 @@ So generators **don't** know about imports or file layout — they only produce 
 
 The shared "map one Prisma field → TypeBox type string" logic (scalar / `typeOverwrite` / enum, or `undefined` for relations) lives in one place: `stringifyFieldType` in `src/generators/fieldType.ts`, reused by the `plain` and `where`/`whereUnique` generators. Callers still own list-wrapping, nullability, optionality and hidden-field filtering.
 
+### Composite types (`src/generators/compositeField.ts`)
+
+MongoDB composite types (`type` blocks) arrive as `options.dmmf.datamodel.types` (typed `DMMF.Model[]`, structurally a model with no id/relations). In the DMMF a composite-type field and a relation field both look like `kind: "object"`; the discriminator is `relationName` (relations have one, composite fields don't), but prismatype keys off the composite **type-name set** instead: `isCompositeTypeField(field, compositeTypeNames)`. `buildCompositeSchemas()` turns the `types` array into a `name → inlined Type.Object string` map (resolving nested composites, skipping cycles). Composite types are **inlined** at every use site (no standalone export): `plain` inlines them via that map, while `relations`/input-relations/`include` receive `compositeTypeNames` and skip them (they aren't relations and have no id to `connect`). `index.ts` builds the map/name-set once and threads both through the generators.
+
 ### Config (`src/config.ts`)
 
 Config is itself validated with a TypeBox `Type.Object` schema and stored in a frozen module-level singleton. Access it **only** via `getConfig()` — it's imported all over the generators. `setConfig` runs `Value.Clean` → `Value.Default` → `Value.Convert` → `Value.Decode` so string values from the Prisma generator block get coerced to their declared types. All generator options and their defaults live here (the README points users here for the "advanced" options).

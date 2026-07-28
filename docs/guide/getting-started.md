@@ -5,11 +5,6 @@ prismatype is a [Prisma](https://github.com/prisma) generator that emits versati
 It runs as part of `prisma generate`: Prisma parses your schema, hands prismatype the
 data model, and prismatype writes `.ts` files of TypeBox schemas to an output directory.
 
-::: warning MongoDB composite types
-prismatype currently does not support
-[MongoDB composite types](https://www.prisma.io/docs/orm/prisma-schema/data-model/models#defining-composite-types).
-:::
-
 ## Install
 
 Add prismatype as a dev dependency with your package manager of choice:

@@ -42,6 +42,34 @@ export const PostSelect = ...
 Enums are emitted separately into `enums.ts` and imported by any model file that uses
 them.
 
+## MongoDB composite types
+
+[MongoDB composite types](https://www.prisma.io/docs/orm/prisma-schema/data-model/models#defining-composite-types)
+(`type` blocks) are supported. Unlike relations, a composite type gets no schema of its
+own; its `Type.Object(...)` is inlined directly into every model that uses it, and it
+appears in the model's `Plain` schema (and its input models) rather than in `Relations`.
+Nested composite types are inlined the same way.
+
+```prisma
+type Address {
+  street String
+  city   String
+}
+
+model User {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  address Address?
+}
+```
+
+```ts
+// the composite type is inlined into UserPlain
+export const UserPlain = Type.Object({
+  id: Type.String(),
+  address: __nullable__(Type.Object({ street: Type.String(), city: Type.String() })),
+});
+```
+
 ## Input models
 
 To simplify validating input data, prismatype can generate schemas specifically for

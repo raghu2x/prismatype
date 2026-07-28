@@ -48,11 +48,14 @@ and transform them to strings, use
 [`useJsonTypes`](/guide/configuration#usejsontypes) (`true` for formatted strings,
 `"transformer"` for a codec). See [TypeBox & Nullability](/guide/typebox).
 
-## MongoDB composite types aren't generated
+## There's no separate schema for my MongoDB composite type
 
-prismatype does not currently support
-[MongoDB composite types](https://www.prisma.io/docs/orm/prisma-schema/data-model/models#defining-composite-types).
-Models using them will not generate correctly.
+[MongoDB composite types](https://www.prisma.io/docs/orm/prisma-schema/data-model/models#defining-composite-types)
+(`type` blocks) don't get their own exported schema. prismatype inlines each composite
+type's `Type.Object(...)` directly into every model (and nested composite) that uses it,
+so a composite field appears inside the model's `Plain` schema rather than as an
+importable `Address`-style export. This is intentional; there is no separate file to
+import.
 
 ## An annotation is being ignored
 
