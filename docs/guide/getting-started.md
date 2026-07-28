@@ -74,11 +74,11 @@ prismatype runs as part of `prisma generate` and writes one `.ts` file per model
 
 ::: danger The output directory is wiped on every generate
 prismatype **wipes and recreates** the output directory on every generate run. Point
-`output` at a folder that prismatype fully owns — don't keep hand-written files there.
+`output` at a folder that prismatype fully owns; don't keep hand-written files there.
 :::
 
 ## Next steps
 
-- [Using the Schemas](/guide/usage) — validate data and derive static types.
-- [Generated Schemas](/guide/generated-schemas) — what each generated export contains.
-- [Annotations](/guide/annotations) — hide fields, add options, and override types.
+- [Using the Schemas](/guide/usage): validate data and derive static types.
+- [Generated Schemas](/guide/generated-schemas): what each generated export contains.
+- [Annotations](/guide/annotations): hide fields, add options, and override types.

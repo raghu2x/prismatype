@@ -104,10 +104,10 @@ handled through connect/disconnect instead.
 Controls how non-JSON-native types (like `DateTime`) are emitted so output is compatible
 with tooling that only supports JSON primitives:
 
-- `false` — off; native types are used.
-- `true` — such types are emitted as a formatted `string` (e.g. `Date` becomes a
+- `false`: off; native types are used.
+- `true`: such types are emitted as a formatted `string` (e.g. `Date` becomes a
   `string`).
-- `"transformer"` — uses TypeBox codecs (`__transformDate__`) to accept native JS `Date`
+- `"transformer"`: uses TypeBox codecs (`__transformDate__`) to accept native JS `Date`
   values but transform them to strings on processing.
 
 ### `allowRecursion`

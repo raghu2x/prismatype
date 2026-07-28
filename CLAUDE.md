@@ -77,3 +77,14 @@ Small string transformers composed onto field types: `wrapWithArray`, `wrapWithN
 - **TypeBox 1.x only.** The legacy 0.x `@sinclair/typebox` API is not supported. See the `typebox-1-migration-facts` memory for verified 1.x API equivalents.
 - **Windows / PowerShell 5.1**: `Set-Content -Encoding utf8` writes a BOM, which breaks Prisma's schema parser. Write schema files without a BOM.
 - The generated schemas are only "real" once a consumer imports them against the actual `typebox` package; generation itself never evaluates them.
+
+## Writing style (docs, comments, READMEs)
+
+**Do not use em dashes (`—`) in prose.** Replace them with the punctuation that best fits the sentence:
+
+- **Sentence break / aside** → comma or semicolon. `X is plain TypeBox — use it...` becomes `X is plain TypeBox, so use it...` or `...TypeBox; use it...`.
+- **`term — definition`** in a list item or link → colon. `- false — off` becomes `- false: off`; `[Usage](/usage) — validate data` becomes `[Usage](/usage): validate data`.
+- **Parenthetical aside** → parentheses when the clause is truly incidental.
+- **Ranges** (e.g. numbers, dates) → hyphen (`1-5`), not an em dash.
+
+Prefer the plainest option (comma) unless a stronger break (semicolon/colon) reads better. En dashes (`–`) fall under the same rule.

@@ -16,7 +16,7 @@ output of individual models and fields.
 Each `hide` directive also has a `hidden` alias (e.g. `@prismatype.input.hidden`).
 
 ::: warning One annotation per line
-You **cannot** use multiple annotations on one line — each must be on its own `///` line.
+You **cannot** use multiple annotations on one line; each must be on its own `///` line.
 :::
 
 ## Example

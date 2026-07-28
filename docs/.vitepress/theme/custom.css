@@ -1,46 +1,79 @@
 /**
- * Custom theme colors for prismatype docs.
- * Palette: indigo → teal, evoking Prisma's data + TypeBox's type-safety.
+ * Custom theme for prismatype docs.
+ * Palette: emerald / green, evoking Prisma's data + TypeBox's type-safety.
+ * Dark mode uses deep slate-green surfaces instead of flat gray.
  */
 
 :root {
-  /* Brand color ramp (indigo/violet) */
-  --vp-c-brand-1: #6366f1;
-  --vp-c-brand-2: #7c7ff2;
-  --vp-c-brand-3: #818cf8;
-  --vp-c-brand-soft: rgba(99, 102, 241, 0.14);
+  /* Brand color ramp (emerald) */
+  --vp-c-brand-1: #059669;
+  --vp-c-brand-2: #10b981;
+  --vp-c-brand-3: #34d399;
+  --vp-c-brand-soft: rgba(16, 185, 129, 0.14);
 
-  /* Accent teal used in gradients */
-  --pt-c-accent: #2dd4bf;
-  --pt-c-accent-deep: #14b8a6;
+  /* Accent (lime/teal) used in gradients */
+  --pt-c-accent: #22c55e;
+  --pt-c-accent-deep: #15803d;
 }
 
 .dark {
-  --vp-c-brand-1: #818cf8;
-  --vp-c-brand-2: #6366f1;
-  --vp-c-brand-3: #6366f1;
-  --vp-c-brand-soft: rgba(129, 140, 248, 0.16);
+  --vp-c-brand-1: #34d399;
+  --vp-c-brand-2: #10b981;
+  --vp-c-brand-3: #10b981;
+  --vp-c-brand-soft: rgba(52, 211, 153, 0.16);
 
-  --pt-c-accent: #2dd4bf;
-  --pt-c-accent-deep: #5eead4;
+  --pt-c-accent: #4ade80;
+  --pt-c-accent-deep: #86efac;
+}
+
+/* ---------- Dark mode surfaces ---------- */
+/* Deep slate-green backgrounds with subtle warmth, layered by elevation. */
+
+.dark {
+  --vp-c-bg: #0c1512;
+  --vp-c-bg-alt: #0a120f;
+  --vp-c-bg-elv: #111d18;
+  --vp-c-bg-soft: #121f1a;
+
+  /* Borders / dividers tinted green so panels read as one family */
+  --vp-c-divider: #1e2f28;
+  --vp-c-border: #23392f;
+  --vp-c-gutter: #0a120f;
+
+  /* Gentle green tint on default/muted text so it doesn't feel cold */
+  --vp-c-text-2: #a7b5ad;
+  --vp-c-text-3: #6f7f77;
+}
+
+/* Code blocks in dark mode: darker than surrounding surface for contrast */
+.dark {
+  --vp-code-block-bg: #071009;
+  --vp-code-bg: rgba(52, 211, 153, 0.1);
+  --vp-c-default-soft: #142019;
 }
 
 /* ---------- Hero ---------- */
 
 :root {
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: linear-gradient(120deg, #6366f1 20%, #2dd4bf);
+  --vp-home-hero-name-background: linear-gradient(120deg, #059669 20%, #22c55e);
 
   --vp-home-hero-image-background-image: linear-gradient(
     -45deg,
-    rgba(99, 102, 241, 0.55) 30%,
-    rgba(45, 212, 191, 0.55)
+    rgba(5, 150, 105, 0.5) 30%,
+    rgba(34, 197, 94, 0.5)
   );
-  --vp-home-hero-image-filter: blur(44px);
+  --vp-home-hero-image-filter: blur(48px);
 }
 
 .dark {
-  --vp-home-hero-name-background: linear-gradient(120deg, #818cf8 20%, #5eead4);
+  --vp-home-hero-name-background: linear-gradient(120deg, #34d399 20%, #86efac);
+
+  --vp-home-hero-image-background-image: linear-gradient(
+    -45deg,
+    rgba(52, 211, 153, 0.4) 30%,
+    rgba(74, 222, 128, 0.4)
+  );
 }
 
 /* ---------- Buttons ---------- */
@@ -68,8 +101,13 @@
   box-shadow: 0 8px 24px var(--vp-c-brand-soft);
 }
 
+/* Subtle green wash on cards in dark mode so they lift off the bg */
+.dark .VPFeature {
+  background-color: var(--vp-c-bg-soft);
+}
+
 .VPFeature .icon {
-  background: linear-gradient(135deg, var(--vp-c-brand-soft), rgba(45, 212, 191, 0.12)) !important;
+  background: linear-gradient(135deg, var(--vp-c-brand-soft), rgba(34, 197, 94, 0.12)) !important;
   border-radius: 10px;
 }
 

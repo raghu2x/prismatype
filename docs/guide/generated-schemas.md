@@ -33,7 +33,7 @@ export const PostSelect = ...
 
 | Export                                       | Contents                                                          |
 | -------------------------------------------- | ----------------------------------------------------------------- |
-| `PostPlain`                                  | The model's own scalar and enum fields — no relations.            |
+| `PostPlain`                                  | The model's own scalar and enum fields, no relations.             |
 | `PostRelations`                              | Only the relation fields (related models' plain schemas inlined). |
 | `Post`                                       | The full model: `Plain` and `Relations` intersected.              |
 | `PostWhere` / `PostWhereUnique`              | Shapes for `where` filters and unique lookups.                    |
@@ -51,7 +51,7 @@ some field-naming conventions to work properly.
 
 When enabled, each model gains additional schemas that can be used for creating and
 updating entities. An input model only allows editing fields of the entity itself. For
-relations, only connecting and disconnecting are allowed — changing or creating related
+relations, only connecting and disconnecting are allowed; changing or creating related
 entities is not.
 
 ### Conventions

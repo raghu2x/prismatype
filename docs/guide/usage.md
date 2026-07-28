@@ -2,7 +2,7 @@
 
 The generated files are plain [TypeBox](https://github.com/sinclairzx81/typebox) schema
 objects, so you use them like any other TypeBox schema. Import from the `barrel.ts`
-re-export file and validate data at runtime or derive a static type — from the exact same
+re-export file and validate data at runtime or derive a static type, from the exact same
 object.
 
 ## Runtime validation and static types
