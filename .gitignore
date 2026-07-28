@@ -28,3 +28,7 @@ prisma/prismatype
 
 # Project
 playground
+
+# Vitepress 
+docs/.vitepress/dist
+docs/.vitepress/cache

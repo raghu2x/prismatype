@@ -33,7 +33,10 @@
     "format": "oxfmt",
     "check": "oxlint && oxfmt --check && bun test",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "@prisma/generator-helper": "^7.9.0",
@@ -45,6 +48,7 @@
     "@types/bun": "latest",
     "oxlint": "^1.75.0",
     "prisma": "7.9.0",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitepress": "^2.0.0-alpha.18"
   }
 }
