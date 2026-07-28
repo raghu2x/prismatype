@@ -26,6 +26,7 @@ export default defineConfig({
           { text: "Annotations", link: "/guide/annotations" },
           { text: "Configuration", link: "/guide/configuration" },
           { text: "TypeBox & Nullability", link: "/guide/typebox" },
+          { text: "Troubleshooting", link: "/guide/troubleshooting" },
         ],
       },
     ],

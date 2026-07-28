@@ -54,6 +54,23 @@ updating entities. An input model only allows editing fields of the entity itsel
 relations, only connecting and disconnecting are allowed; changing or creating related
 entities is not.
 
+### Input model exports
+
+For a `Post` model, enabling `inputModel` adds these exports (mirroring the `Plain` /
+`Relations` / composite split of the read schemas):
+
+| Export                     | Contents                                                                  |
+| -------------------------- | ------------------------------------------------------------------------- |
+| `PostPlainInputCreate`     | The model's own editable fields for a create payload.                     |
+| `PostRelationsInputCreate` | The relation `connect` / `disconnect` shapes for a create payload.        |
+| `PostInputCreate`          | Composite of the two above; the schema you validate create requests with. |
+| `PostPlainInputUpdate`     | The model's own editable fields for an update payload (all optional).     |
+| `PostRelationsInputUpdate` | The relation `connect` / `disconnect` shapes for an update payload.       |
+| `PostInputUpdate`          | Composite of the two above; the schema you validate update requests with. |
+
+In practice you import the composites, `PostInputCreate` and `PostInputUpdate`. The
+`Plain*` / `Relations*` halves are exported so you can compose narrower shapes yourself.
+
 ### Conventions
 
 For input models to behave correctly, prismatype expects these conventions:

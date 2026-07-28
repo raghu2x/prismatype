@@ -82,3 +82,4 @@ prismatype **wipes and recreates** the output directory on every generate run. P
 - [Using the Schemas](/guide/usage): validate data and derive static types.
 - [Generated Schemas](/guide/generated-schemas): what each generated export contains.
 - [Annotations](/guide/annotations): hide fields, add options, and override types.
+- [Troubleshooting](/guide/troubleshooting): fixes for the most common issues.
