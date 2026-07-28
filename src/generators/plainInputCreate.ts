@@ -5,10 +5,11 @@ import { stringifyPlain } from "./plain";
 export function processPlainInputCreate(
   models: DMMF.Model[] | Readonly<DMMF.Model[]>,
   processedEnums: ProcessedModel[],
+  compositeSchemas: Map<string, string> = new Map(),
 ): ProcessedModel[] {
   const processedPlainInputCreate: ProcessedModel[] = [];
   for (const m of models) {
-    const o = stringifyPlain(m, processedEnums, true, false);
+    const o = stringifyPlain(m, processedEnums, true, false, compositeSchemas);
     if (o) {
       processedPlainInputCreate.push({ name: m.name, stringRepresentation: o });
     }

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { Type } from "typebox";
 import { Value } from "typebox/value";
+import { buildCompositeSchemas } from "../src/generators/compositeField";
 import { stringifyPlain } from "../src/generators/plain";
 import type { ProcessedModel } from "../src/model";
 import { field, model } from "./fixtures/dmmf";
@@ -54,5 +55,48 @@ describe("e2e: generated output validates against real typebox", () => {
 
     expect(Value.Check(schema, { id: 1, bio: null })).toBe(true);
     expect(Value.Check(schema, { id: 1, bio: "hi" })).toBe(true);
+  });
+
+  test("an inlined MongoDB composite-type field validates nested objects", () => {
+    const address = model("Address", [
+      field({ name: "street", type: "String" }),
+      field({ name: "city", type: "String" }),
+    ]);
+    const user = model("User", [
+      field({ name: "id", type: "Int" }),
+      field({ name: "address", type: "Address", kind: "object" }),
+      field({ name: "photos", type: "Photo", kind: "object", isList: true }),
+    ]);
+    const photo = model("Photo", [
+      field({ name: "url", type: "String" }),
+      field({ name: "width", type: "Int" }),
+    ]);
+
+    const compositeSchemas = buildCompositeSchemas([address, photo], noEnums);
+    const schema = evalSchema(stringifyPlain(user, noEnums, false, false, compositeSchemas));
+
+    expect(
+      Value.Check(schema, {
+        id: 1,
+        address: { street: "Main", city: "Metropolis" },
+        photos: [{ url: "http://x", width: 100 }],
+      }),
+    ).toBe(true);
+    // A composite field with a missing required sub-field is rejected.
+    expect(
+      Value.Check(schema, {
+        id: 1,
+        address: { street: "Main" },
+        photos: [],
+      }),
+    ).toBe(false);
+    // A non-array for a list composite field is rejected.
+    expect(
+      Value.Check(schema, {
+        id: 1,
+        address: { street: "Main", city: "Metropolis" },
+        photos: { url: "http://x", width: 100 },
+      }),
+    ).toBe(false);
   });
 });

@@ -3,6 +3,7 @@ import { extractAnnotations } from "../annotations/annotations";
 import { generateTypeboxOptions } from "../annotations/options";
 import { getConfig } from "../config";
 import type { ProcessedModel } from "../model";
+import { isCompositeTypeField } from "./compositeField";
 import { isPrimitivePrismaFieldType } from "./primitiveField";
 import { wrapWithArray } from "./wrappers/array";
 import { wrapWithNullable } from "./wrappers/nullable";
@@ -12,10 +13,11 @@ export function processRelations(
   models: DMMF.Model[] | Readonly<DMMF.Model[]>,
   processedEnums: ProcessedModel[],
   processedPlain: ProcessedModel[],
+  compositeTypeNames: ReadonlySet<string> = new Set(),
 ): ProcessedModel[] {
   const processedRelations: ProcessedModel[] = [];
   for (const m of models) {
-    const o = stringifyRelations(m, processedEnums, processedPlain);
+    const o = stringifyRelations(m, processedEnums, processedPlain, compositeTypeNames);
     if (o) {
       processedRelations.push({ name: m.name, stringRepresentation: o });
     }
@@ -27,6 +29,7 @@ export function stringifyRelations(
   data: DMMF.Model,
   processedEnums: ProcessedModel[],
   processedPlain: ProcessedModel[],
+  compositeTypeNames: ReadonlySet<string> = new Set(),
 ) {
   const annotations = extractAnnotations(data.documentation);
   if (annotations.isHidden) return undefined;
@@ -38,6 +41,7 @@ export function stringifyRelations(
       if (
         annotations.isHidden ||
         isPrimitivePrismaFieldType(field.type) ||
+        isCompositeTypeField(field, compositeTypeNames) ||
         processedEnums.find((e) => e.name === field.type)
       ) {
         return undefined;
@@ -142,10 +146,11 @@ function stringifyConnectUnique(
 export function processRelationsInputCreate(
   models: DMMF.Model[] | Readonly<DMMF.Model[]>,
   processedEnums: ProcessedModel[],
+  compositeTypeNames: ReadonlySet<string> = new Set(),
 ): ProcessedModel[] {
   const processedRelationsInputCreate: ProcessedModel[] = [];
   for (const m of models) {
-    const o = stringifyRelationsInputCreate(m, models, processedEnums);
+    const o = stringifyRelationsInputCreate(m, models, processedEnums, compositeTypeNames);
     if (o) {
       processedRelationsInputCreate.push({
         name: m.name,
@@ -160,6 +165,7 @@ export function stringifyRelationsInputCreate(
   data: DMMF.Model,
   allModels: DMMF.Model[] | Readonly<DMMF.Model[]>,
   processedEnums: ProcessedModel[],
+  compositeTypeNames: ReadonlySet<string> = new Set(),
 ) {
   const annotations = extractAnnotations(data.documentation);
   if (annotations.isHidden || annotations.isHiddenInput || annotations.isHiddenInputCreate)
@@ -174,6 +180,7 @@ export function stringifyRelationsInputCreate(
         annotations.isHiddenInput ||
         annotations.isHiddenInputCreate ||
         isPrimitivePrismaFieldType(field.type) ||
+        isCompositeTypeField(field, compositeTypeNames) ||
         processedEnums.find((e) => e.name === field.type)
       ) {
         return undefined;
@@ -215,10 +222,11 @@ export function stringifyRelationsInputCreate(
 export function processRelationsInputUpdate(
   models: DMMF.Model[] | Readonly<DMMF.Model[]>,
   processedEnums: ProcessedModel[],
+  compositeTypeNames: ReadonlySet<string> = new Set(),
 ): ProcessedModel[] {
   const processedRelationsInputUpdate: ProcessedModel[] = [];
   for (const m of models) {
-    const o = stringifyRelationsInputUpdate(m, models, processedEnums);
+    const o = stringifyRelationsInputUpdate(m, models, processedEnums, compositeTypeNames);
     if (o) {
       processedRelationsInputUpdate.push({
         name: m.name,
@@ -233,6 +241,7 @@ export function stringifyRelationsInputUpdate(
   data: DMMF.Model,
   allModels: DMMF.Model[] | Readonly<DMMF.Model[]>,
   processedEnums: ProcessedModel[],
+  compositeTypeNames: ReadonlySet<string> = new Set(),
 ) {
   const annotations = extractAnnotations(data.documentation);
   if (annotations.isHidden || annotations.isHiddenInput || annotations.isHiddenInputUpdate)
@@ -247,6 +256,7 @@ export function stringifyRelationsInputUpdate(
         annotations.isHiddenInput ||
         annotations.isHiddenInputUpdate ||
         isPrimitivePrismaFieldType(field.type) ||
+        isCompositeTypeField(field, compositeTypeNames) ||
         processedEnums.find((e) => e.name === field.type)
       ) {
         return undefined;

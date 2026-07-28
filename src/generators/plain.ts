@@ -11,10 +11,11 @@ import { wrapWithOptional } from "./wrappers/optional";
 export function processPlain(
   models: DMMF.Model[] | Readonly<DMMF.Model[]>,
   processedEnums: ProcessedModel[],
+  compositeSchemas: Map<string, string> = new Map(),
 ): ProcessedModel[] {
   const processedPlain: ProcessedModel[] = [];
   for (const m of models) {
-    const o = stringifyPlain(m, processedEnums);
+    const o = stringifyPlain(m, processedEnums, false, false, compositeSchemas);
     if (o) {
       processedPlain.push({ name: m.name, stringRepresentation: o });
     }
@@ -27,6 +28,7 @@ export function stringifyPlain(
   processedEnums: ProcessedModel[],
   isInputModelCreate = false,
   isInputModelUpdate = false,
+  compositeSchemas: Map<string, string> = new Map(),
 ) {
   const annotations = extractAnnotations(data.documentation);
 
@@ -88,7 +90,12 @@ export function stringifyPlain(
       // INPUT MODEL FILTERS END
       // ===============================
 
-      let stringifiedType = stringifyFieldType(field, annotations, processedEnums);
+      // A MongoDB composite-type field inlines the composite's object; anything
+      // else resolves to a scalar/enum. Both then flow through the same list /
+      // nullability / optionality wrapping below.
+      let stringifiedType =
+        (field.kind === "object" ? compositeSchemas.get(field.type) : undefined) ??
+        stringifyFieldType(field, annotations, processedEnums);
 
       if (stringifiedType === undefined) {
         return undefined;
