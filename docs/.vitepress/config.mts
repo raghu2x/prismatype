@@ -2,7 +2,7 @@ import { defineConfig } from "vitepress";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: "prismatype",
+  title: "PrismaType",
   description:
     "Generate versatile TypeBox schemas from your Prisma schema, as part of prisma generate.",
   themeConfig: {
@@ -30,13 +30,10 @@ export default defineConfig({
       },
     ],
 
-    socialLinks: [
-      { icon: "github", link: "https://github.com/raghu2x/prismatype" },
-    ],
+    socialLinks: [{ icon: "github", link: "https://github.com/raghu2x/prismatype" }],
 
     editLink: {
-      pattern:
-        "https://github.com/raghu2x/prismatype/edit/main/docs/:path",
+      pattern: "https://github.com/raghu2x/prismatype/edit/main/docs/:path",
       text: "Edit this page on GitHub",
     },
 

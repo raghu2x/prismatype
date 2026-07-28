@@ -1,0 +1,88 @@
+/**
+ * Custom theme colors for prismatype docs.
+ * Palette: indigo → teal, evoking Prisma's data + TypeBox's type-safety.
+ */
+
+:root {
+  /* Brand color ramp (indigo/violet) */
+  --vp-c-brand-1: #6366f1;
+  --vp-c-brand-2: #7c7ff2;
+  --vp-c-brand-3: #818cf8;
+  --vp-c-brand-soft: rgba(99, 102, 241, 0.14);
+
+  /* Accent teal used in gradients */
+  --pt-c-accent: #2dd4bf;
+  --pt-c-accent-deep: #14b8a6;
+}
+
+.dark {
+  --vp-c-brand-1: #818cf8;
+  --vp-c-brand-2: #6366f1;
+  --vp-c-brand-3: #6366f1;
+  --vp-c-brand-soft: rgba(129, 140, 248, 0.16);
+
+  --pt-c-accent: #2dd4bf;
+  --pt-c-accent-deep: #5eead4;
+}
+
+/* ---------- Hero ---------- */
+
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg, #6366f1 20%, #2dd4bf);
+
+  --vp-home-hero-image-background-image: linear-gradient(
+    -45deg,
+    rgba(99, 102, 241, 0.55) 30%,
+    rgba(45, 212, 191, 0.55)
+  );
+  --vp-home-hero-image-filter: blur(44px);
+}
+
+.dark {
+  --vp-home-hero-name-background: linear-gradient(120deg, #818cf8 20%, #5eead4);
+}
+
+/* ---------- Buttons ---------- */
+
+:root {
+  --vp-button-brand-bg: var(--vp-c-brand-1);
+  --vp-button-brand-hover-bg: var(--vp-c-brand-2);
+  --vp-button-brand-active-bg: var(--vp-c-brand-3);
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-hover-border: transparent;
+}
+
+/* ---------- Feature cards ---------- */
+
+.VPFeature {
+  transition:
+    border-color 0.25s,
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+
+.VPFeature:hover {
+  border-color: var(--vp-c-brand-1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--vp-c-brand-soft);
+}
+
+.VPFeature .icon {
+  background: linear-gradient(135deg, var(--vp-c-brand-soft), rgba(45, 212, 191, 0.12)) !important;
+  border-radius: 10px;
+}
+
+.VPFeature .icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: var(--vp-c-brand-1);
+  fill: none;
+}
+
+/* ---------- Link accents ---------- */
+
+.vp-doc a {
+  text-decoration-color: var(--vp-c-brand-soft);
+  text-underline-offset: 3px;
+}

@@ -3,15 +3,15 @@
 prismatype reads directives from Prisma's triple-slash doc comments (`///`) to adjust the
 output of individual models and fields.
 
-| Annotation                    | Example                                     | Description                                                                                                |
-| ----------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `@prismatype.hide`            | –                                           | Hides the field or model from the output.                                                                  |
-| `@prismatype.hidden`          | –                                           | Alias for `@prismatype.hide`.                                                                              |
-| `@prismatype.input.hide`      | –                                           | Hides the field or model from the output only in the input model.                                          |
-| `@prismatype.create.input.hide` | –                                         | Hides the field or model only in the input **create** model.                                               |
-| `@prismatype.update.input.hide` | –                                         | Hides the field or model only in the input **update** model.                                               |
-| `@prismatype.options`         | `@prismatype.options{ min: 10, max: 20 }`   | Applies the provided options to the field or model in the generated schema. Must be valid JS/TS syntax.    |
-| `@prismatype.typeOverwrite`   | `@prismatype.typeOverwrite=Type.CustomName` | Overwrites the type prismatype outputs for a field with a custom string.                                   |
+| Annotation                      | Example                                     | Description                                                                                             |
+| ------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `@prismatype.hide`              | –                                           | Hides the field or model from the output.                                                               |
+| `@prismatype.hidden`            | –                                           | Alias for `@prismatype.hide`.                                                                           |
+| `@prismatype.input.hide`        | –                                           | Hides the field or model from the output only in the input model.                                       |
+| `@prismatype.create.input.hide` | –                                           | Hides the field or model only in the input **create** model.                                            |
+| `@prismatype.update.input.hide` | –                                           | Hides the field or model only in the input **update** model.                                            |
+| `@prismatype.options`           | `@prismatype.options{ min: 10, max: 20 }`   | Applies the provided options to the field or model in the generated schema. Must be valid JS/TS syntax. |
+| `@prismatype.typeOverwrite`     | `@prismatype.typeOverwrite=Type.CustomName` | Overwrites the type prismatype outputs for a field with a custom string.                                |
 
 Each `hide` directive also has a `hidden` alias (e.g. `@prismatype.input.hidden`).
 

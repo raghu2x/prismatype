@@ -80,5 +80,9 @@ under a key joining the field names with `_`:
 
 ```ts
 // composite key of userId + teamId
-{ userId_teamId: { userId, teamId } }
+{
+  userId_teamId: {
+    (userId, teamId);
+  }
+}
 ```
