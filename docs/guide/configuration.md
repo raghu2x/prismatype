@@ -2,7 +2,7 @@
 
 All options are set inside the `generator prismatype { ... }` block in your
 `schema.prisma`. Values are strings, booleans, or arrays as noted below; Prisma passes
-them to prismatype, which coerces them to their declared types.
+them to PrismaType, which coerces them to their declared types.
 
 ```prisma
 generator prismatype {
@@ -23,7 +23,7 @@ Directory the generated files are written to.
 
 ::: danger
 This directory is **wiped and recreated on every generate**. Point it at a folder that
-prismatype fully owns.
+PrismaType fully owns.
 :::
 
 ### `typeboxImportVariableName`

@@ -23,8 +23,8 @@ See [Using the Schemas](/guide/usage#use-with-frameworks) for the framework cont
 
 ## My hand-written files in the output folder disappeared
 
-prismatype **wipes and recreates** the output directory on every `prisma generate`. Point
-[`output`](/guide/configuration#output) at a folder that prismatype fully owns, and keep
+PrismaType **wipes and recreates** the output directory on every `prisma generate`. Point
+[`output`](/guide/configuration#output) at a folder that PrismaType fully owns, and keep
 your own code elsewhere.
 
 ## `ERR_MODULE_NOT_FOUND` / imports fail under nodenext
@@ -42,7 +42,7 @@ generator prismatype {
 
 ## `Date` values are rejected / serialize oddly
 
-TypeBox 1.x has no `Type.Date`. prismatype emits a refined `Unsafe` schema for `DateTime`
+TypeBox 1.x has no `Type.Date`. PrismaType emits a refined `Unsafe` schema for `DateTime`
 by default. If you need JSON-serializable output, or want to accept native `Date` objects
 and transform them to strings, use
 [`useJsonTypes`](/guide/configuration#usejsontypes) (`true` for formatted strings,
@@ -51,7 +51,7 @@ and transform them to strings, use
 ## There's no separate schema for my MongoDB composite type
 
 [MongoDB composite types](https://www.prisma.io/docs/orm/prisma-schema/data-model/models#defining-composite-types)
-(`type` blocks) don't get their own exported schema. prismatype inlines each composite
+(`type` blocks) don't get their own exported schema. PrismaType inlines each composite
 type's `Type.Object(...)` directly into every model (and nested composite) that uses it,
 so a composite field appears inside the model's `Plain` schema rather than as an
 importable `Address`-style export. This is intentional; there is no separate file to

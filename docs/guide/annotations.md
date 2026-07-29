@@ -1,6 +1,6 @@
 # Annotations
 
-prismatype reads directives from Prisma's triple-slash doc comments (`///`) to adjust the
+PrismaType reads directives from Prisma's triple-slash doc comments (`///`) to adjust the
 output of individual models and fields.
 
 | Annotation                      | Example                                     | Description                                                                                             |
@@ -11,7 +11,7 @@ output of individual models and fields.
 | `@prismatype.create.input.hide` | (none)                                      | Hides the field or model only in the input **create** model.                                            |
 | `@prismatype.update.input.hide` | (none)                                      | Hides the field or model only in the input **update** model.                                            |
 | `@prismatype.options`           | `@prismatype.options{ min: 10, max: 20 }`   | Applies the provided options to the field or model in the generated schema. Must be valid JS/TS syntax. |
-| `@prismatype.typeOverwrite`     | `@prismatype.typeOverwrite=Type.CustomName` | Overwrites the type prismatype outputs for a field with a custom string.                                |
+| `@prismatype.typeOverwrite`     | `@prismatype.typeOverwrite=Type.CustomName` | Overwrites the type PrismaType outputs for a field with a custom string.                                |
 
 Each `hide` directive also has a `hidden` alias (e.g. `@prismatype.input.hidden`).
 
@@ -56,7 +56,5 @@ Any line in a `///` comment that isn't a recognized annotation becomes the schem
 
 ## Type overwrites
 
-`@prismatype.typeOverwrite=...` replaces the type prismatype would emit for a field with a
+`@prismatype.typeOverwrite=...` replaces the type PrismaType would emit for a field with a
 literal string. This is useful when you want a custom TypeBox type for a specific field.
-See [raghu2x/prismatype#29](https://github.com/raghu2x/prismatype/issues/29) for an
-extended use case.

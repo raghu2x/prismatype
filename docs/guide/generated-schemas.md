@@ -1,6 +1,6 @@
 # Generated Schemas
 
-For each model in your Prisma schema, prismatype outputs several schema objects. Using a
+For each model in your Prisma schema, PrismaType outputs several schema objects. Using a
 `Post` model as an example:
 
 ```ts
@@ -72,7 +72,7 @@ export const UserPlain = Type.Object({
 
 ## Input models
 
-To simplify validating input data, prismatype can generate schemas specifically for
+To simplify validating input data, PrismaType can generate schemas specifically for
 create and update payloads. These are called **input models** and must be explicitly
 enabled with [`inputModel = true`](/guide/configuration#inputmodel), because they rely on
 some field-naming conventions to work properly.
@@ -101,7 +101,7 @@ In practice you import the composites, `PostInputCreate` and `PostInputUpdate`. 
 
 ### Conventions
 
-For input models to behave correctly, prismatype expects these conventions:
+For input models to behave correctly, PrismaType expects these conventions:
 
 1. **Foreign IDs** need to end in `Id` (case is ignored, e.g. `userId` or `userid` both
    work).

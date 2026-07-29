@@ -1,13 +1,13 @@
 # Getting Started
 
-prismatype is a [Prisma](https://github.com/prisma) generator that emits versatile
+PrismaType is a [Prisma](https://github.com/prisma) generator that emits versatile
 [TypeBox](https://github.com/sinclairzx81/typebox) schemas from your Prisma schema.
-It runs as part of `prisma generate`: Prisma parses your schema, hands prismatype the
-data model, and prismatype writes `.ts` files of TypeBox schemas to an output directory.
+It runs as part of `prisma generate`: Prisma parses your schema, hands PrismaType the
+data model, and PrismaType writes `.ts` files of TypeBox schemas to an output directory.
 
 ## Install
 
-Add prismatype as a dev dependency with your package manager of choice:
+Add PrismaType as a dev dependency with your package manager of choice:
 
 ::: code-group
 
@@ -60,7 +60,7 @@ Run Prisma's generate command:
 npx prisma generate
 ```
 
-prismatype runs as part of `prisma generate` and writes one `.ts` file per model into the
+PrismaType runs as part of `prisma generate` and writes one `.ts` file per model into the
 `output` directory, plus:
 
 - a shared `enums.ts` file that every model using an enum imports from,
@@ -68,8 +68,8 @@ prismatype runs as part of `prisma generate` and writes one `.ts` file per model
 - the `__nullable__` and `__transformDate__` helper files.
 
 ::: danger The output directory is wiped on every generate
-prismatype **wipes and recreates** the output directory on every generate run. Point
-`output` at a folder that prismatype fully owns; don't keep hand-written files there.
+PrismaType **wipes and recreates** the output directory on every generate run. Point
+`output` at a folder that PrismaType fully owns; don't keep hand-written files there.
 :::
 
 ## Next steps
