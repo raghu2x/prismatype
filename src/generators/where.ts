@@ -9,8 +9,6 @@ import { makeIntersection } from "./wrappers/intersect";
 import { wrapWithPartial } from "./wrappers/partial";
 import { makeUnion } from "./wrappers/union";
 
-const selfReferenceName = "Self";
-
 export function processWhere(
   models: DMMF.Model[] | Readonly<DMMF.Model[]>,
   processedEnums: ProcessedModel[],
@@ -47,12 +45,12 @@ export function stringifyWhere(data: DMMF.Model, processedEnums: ProcessedModel[
 
   if (getConfig().allowRecursion) {
     return wrapWithPartial(
-      `${getConfig().typeboxImportVariableName}.Recursive(${selfReferenceName} =>${
+      `${getConfig().typeboxImportVariableName}.Cyclic({${data.name}:${
         getConfig().typeboxImportVariableName
-      }.Object({${AND_OR_NOT()},${fields.join(",")}},${generateTypeboxOptions({
+      }.Object({${AND_OR_NOT(data.name)},${fields.join(",")}},${generateTypeboxOptions({
         excludeAdditionalProperties: true,
         input: annotations,
-      })}), { $id: "${data.name}"})`,
+      })})}, "${data.name}")`,
     );
   }
 
@@ -152,22 +150,23 @@ export function stringifyWhereUnique(data: DMMF.Model, processedEnums: Processed
   )}},${generateTypeboxOptions({ excludeAdditionalProperties: true, input: annotations })})`;
 
   if (getConfig().allowRecursion) {
-    return `${
-      getConfig().typeboxImportVariableName
-    }.Recursive(${selfReferenceName} => ${makeIntersection([
+    return `${getConfig().typeboxImportVariableName}.Cyclic({${data.name}: ${makeIntersection([
       wrapWithPartial(uniqueBaseObject, true),
       makeUnion(
         [...uniqueFields, ...uniqueCompositeFields].map(
           (f) => `${getConfig().typeboxImportVariableName}.Object({${f}})`,
         ),
       ),
-      wrapWithPartial(`${getConfig().typeboxImportVariableName}.Object({${AND_OR_NOT()}})`, true),
+      wrapWithPartial(
+        `${getConfig().typeboxImportVariableName}.Object({${AND_OR_NOT(data.name)}})`,
+        true,
+      ),
       wrapWithPartial(
         `${
           getConfig().typeboxImportVariableName
         }.Object({${allFields.join(",")}}, ${generateTypeboxOptions()})`,
       ),
-    ])}, { $id: "${data.name}"})`;
+    ])}}, "${data.name}")`;
   }
 
   return makeIntersection([
@@ -181,12 +180,9 @@ export function stringifyWhereUnique(data: DMMF.Model, processedEnums: Processed
   ]);
 }
 
-function AND_OR_NOT() {
-  return `AND: ${
-    getConfig().typeboxImportVariableName
-  }.Union([${selfReferenceName}, ${wrapWithArray(selfReferenceName)}]),
-	NOT: ${
-    getConfig().typeboxImportVariableName
-  }.Union([${selfReferenceName}, ${wrapWithArray(selfReferenceName)}]),
-	OR: ${wrapWithArray(selfReferenceName)}`;
+function AND_OR_NOT(modelName: string) {
+  const self = `${getConfig().typeboxImportVariableName}.Ref("${modelName}")`;
+  return `AND: ${getConfig().typeboxImportVariableName}.Union([${self}, ${wrapWithArray(self)}]),
+	NOT: ${getConfig().typeboxImportVariableName}.Union([${self}, ${wrapWithArray(self)}]),
+	OR: ${wrapWithArray(self)}`;
 }

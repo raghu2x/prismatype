@@ -12,7 +12,7 @@ generator prismatype {
   output                      = "./generated/schema"
   additionalFieldsPlain       = ["additional: Type.Optional(Type.String())"]
   useJsonTypes                = true
-  allowRecursion              = false
+  allowRecursion              = true
   typeboxImportDependencyName = "typebox"
   typeboxImportVariableName   = "Type"
 }

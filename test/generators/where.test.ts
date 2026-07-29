@@ -19,12 +19,13 @@ describe("stringifyWhere", () => {
     const out = stringifyWhere(m, noEnums);
 
     expect(out).toContain("Type.Partial(");
-    expect(out).toContain("Type.Recursive(");
+    expect(out).toContain("Type.Cyclic({User:");
+    expect(out).toContain('Type.Ref("User")');
     expect(out).toContain("AND:");
     expect(out).toContain("OR:");
     expect(out).toContain("NOT:");
     expect(out).toContain("id: Type.Integer(");
-    expect(out).toContain('{ $id: "User"}');
+    expect(out).toContain(', "User")');
   });
 
   test("omits relation fields", () => {
@@ -41,7 +42,7 @@ describe("stringifyWhere", () => {
     resetConfig({ allowRecursion: false });
     const m = model("User", [field({ name: "id", type: "Int" })]);
     const out = stringifyWhere(m, noEnums);
-    expect(out).not.toContain("Type.Recursive(");
+    expect(out).not.toContain("Type.Cyclic(");
     expect(out).toContain("id: Type.Integer(");
   });
 
@@ -118,7 +119,7 @@ describe("stringifyWhereUnique", () => {
     resetConfig({ allowRecursion: false });
     const m = model("User", [field({ name: "id", type: "Int", isId: true })]);
     const out = stringifyWhereUnique(m, noEnums);
-    expect(out).not.toContain("Type.Recursive(");
+    expect(out).not.toContain("Type.Cyclic(");
     expect(out).toContain("Type.Intersect(");
   });
 

@@ -1,6 +1,7 @@
 {
   "name": "prismatype",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "private": false,
   "description": "Typebox generator for prisma schema",
   "keywords": [
     "code-generation",
@@ -11,7 +12,7 @@
     "typebox",
     "typebox-generator"
   ],
-  "homepage": "https://github.com/raghu2x/prismatype",
+  "homepage": "https://prismatype.netlify.app",
   "license": "MIT",
   "author": {
     "name": "Raghvendra Yadav",
