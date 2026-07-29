@@ -1,10 +1,21 @@
 # PrismaType
 
+[![npm version](https://img.shields.io/npm/v/prismatype.svg?logo=npm)](https://www.npmjs.com/package/prismatype)
+[![CI](https://github.com/raghu2x/prismatype/actions/workflows/pull_request.yml/badge.svg)](https://github.com/raghu2x/prismatype/actions/workflows/pull_request.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-ready-3178C6.svg?logo=typescript)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 Generate versatile [TypeBox](https://github.com/sinclairzx81/typebox) schemas from your
 [Prisma](https://github.com/prisma) schema, as part of `prisma generate`.
 
 The output is plain TypeBox, so you validate at runtime with `Value.Check` and derive
 compile-time types with `Static` — from a single source of truth.
+
+## Requirements
+
+- **Prisma** 7 or newer
+- **Node.js** 22 or newer
+- **TypeBox** 1.x or newer (the unscoped `typebox` package, or a package that re-exports the 1.x API)
 
 ## Install
 

@@ -5,6 +5,14 @@ PrismaType is a [Prisma](https://github.com/prisma) generator that emits versati
 It runs as part of `prisma generate`: Prisma parses your schema, hands PrismaType the
 data model, and PrismaType writes `.ts` files of TypeBox schemas to an output directory.
 
+## Requirements
+
+Before installing, make sure your project meets these minimums:
+
+- **Prisma** 7 or newer
+- **Node.js** 22 or newer
+- **TypeBox** 1.x or newer (the unscoped `typebox` package, or a package that re-exports the 1.x API)
+
 ## Install
 
 Add PrismaType as a dev dependency with your package manager of choice:
