@@ -8,7 +8,7 @@ const output = await Bun.build({
   entrypoints: ["./src/cli.ts"],
   outdir: "./dist",
   target: "node",
-  format: "cjs",
+  format: "esm",
   sourcemap: "external",
   minify: true,
   external: ["oxfmt", "typebox"],
