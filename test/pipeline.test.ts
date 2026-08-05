@@ -2,15 +2,15 @@ import { mkdtemp, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { readOutput, runPipeline } from "./fixtures/pipeline";
+import { readOutput, readRootOutput, runPipeline } from "./fixtures/pipeline";
 import { resetConfig } from "./helpers";
 
 /**
  * Full-pipeline behaviour test: runs the real generators over a representative
  * DMMF, then `write()`s to a temp directory and asserts the on-disk output.
  * This mirrors the wiring in `src/index.ts` (minus the Prisma generatorHandler
- * shell) and exercises model assembly, the writer, the barrel, and formatting
- * together.
+ * shell) and exercises model assembly, the writer, the model barrel, and
+ * formatting together.
  *
  * `prisma/generated/` is gitignored, so this (with the snapshot test) is the
  * only guard against whole-schema output regressions. This file asserts
@@ -29,31 +29,34 @@ describe("full pipeline: generators -> write -> disk", () => {
     await rm(dir, { recursive: true, force: true });
   });
 
-  test("writes one file per model plus the shared enum and helper files", async () => {
+  test("writes per-model files under models/ and shared files at the root", async () => {
     await runPipeline();
-    const files = (await readdir(dir)).sort();
+    const rootFiles = (await readdir(dir)).sort();
+    const modelFiles = (await readdir(join(dir, "models"))).sort();
 
-    expect(files).toContain("User.ts");
-    expect(files).toContain("Post.ts");
-    // All enums live in a single shared file (config.enumsFileName), not one per enum.
-    expect(files).toContain("enums.ts");
-    // Helper modules are always emitted.
-    expect(files).toContain("__nullable__.ts");
-    expect(files).toContain("__transformDate__.ts");
-    expect(files).toContain("barrel.ts");
+    // Per-model files live in the models/ subdirectory.
+    expect(modelFiles).toContain("User.ts");
+    expect(modelFiles).toContain("Post.ts");
+    // All enums live in a single shared file at the root, not one per enum.
+    expect(rootFiles).toContain("enums.ts");
+    // Helper modules and the model barrel are always emitted at the root.
+    expect(rootFiles).toContain("__nullable__.ts");
+    expect(rootFiles).toContain("__transformDate__.ts");
+    expect(rootFiles).toContain("model.ts");
   });
 
-  test("the barrel re-exports every generated file", async () => {
+  test("the model barrel re-exports every model file and nothing else", async () => {
     await runPipeline();
-    const barrel = await readOutput(dir, "barrel");
+    const barrel = await readRootOutput(dir, "model");
 
-    expect(barrel).toContain('export * from "./User";');
-    expect(barrel).toContain('export * from "./Post";');
-    expect(barrel).toContain('export * from "./enums";');
-    expect(barrel).toContain('export * from "./__nullable__";');
-    expect(barrel).toContain('export * from "./__transformDate__";');
+    expect(barrel).toContain('export * from "./models/User";');
+    expect(barrel).toContain('export * from "./models/Post";');
+    // The barrel re-exports models only, not enums or helpers.
+    expect(barrel).not.toContain("enums");
+    expect(barrel).not.toContain("__nullable__");
+    expect(barrel).not.toContain("__transformDate__");
     // The barrel should not re-export itself.
-    expect(barrel).not.toContain('export * from "./barrel"');
+    expect(barrel).not.toContain('"./model"');
   });
 
   test("each model file imports Type from the configured dependency", async () => {
@@ -94,7 +97,7 @@ describe("full pipeline: generators -> write -> disk", () => {
 
   test("the shared enums file emits the Role values", async () => {
     await runPipeline();
-    const enumsFile = await readOutput(dir, "enums");
+    const enumsFile = await readRootOutput(dir, "enums");
 
     expect(enumsFile).toContain("Role");
     expect(enumsFile).toContain("USER");

@@ -2,14 +2,40 @@
 
 exports[`full output snapshots (rich schema) default config: every generated file 1`] = `
 {
-  "Account.ts": 
+  "__nullable__.ts": 
+"import { Type, type TSchema } from "typebox";
+export const __nullable__ = <T extends TSchema>(schema: T) => Type.Union([Type.Null(), schema]);
+"
+,
+  "__transformDate__.ts": 
+"import { Type } from "typebox";
+export const __transformDate__ = (options?: Parameters<typeof Type.String>[0]) =>
+  Type.Codec(Type.String({ format: "date-time", ...options }))
+    .Decode((value) => new Date(value))
+    .Encode((value) => value.toISOString());
+"
+,
+  "enums.ts": 
 "import { Type } from "typebox";
 
-import { __transformDate__ } from "./__transformDate__";
+export const Role = Type.Enum(["USER", "ADMIN"]);
 
-import { __nullable__ } from "./__nullable__";
+export const Status = Type.Enum(["ACTIVE", "SUSPENDED", "DELETED"]);
+"
+,
+  "model.ts": 
+"export * from "./models/Account";
+export * from "./models/Profile";
+"
+,
+  "models/Account.ts": 
+"import { Type } from "typebox";
 
-import { Role, Status } from "./enums";
+import { __transformDate__ } from "../__transformDate__";
+
+import { __nullable__ } from "../__nullable__";
+
+import { Role, Status } from "../enums";
 
 export const AccountPlain = Type.Object(
   {
@@ -215,14 +241,14 @@ export const Account = Type.Evaluate(Type.Intersect([AccountPlain, AccountRelati
 });
 "
 ,
-  "Profile.ts": 
+  "models/Profile.ts": 
 "import { Type } from "typebox";
 
-import { __transformDate__ } from "./__transformDate__";
+import { __transformDate__ } from "../__transformDate__";
 
-import { __nullable__ } from "./__nullable__";
+import { __nullable__ } from "../__nullable__";
 
-import { Role, Status } from "./enums";
+import { Role, Status } from "../enums";
 
 export const ProfilePlain = Type.Object(
   {
@@ -395,6 +421,11 @@ export const Profile = Type.Evaluate(Type.Intersect([ProfilePlain, ProfileRelati
 });
 "
 ,
+}
+`;
+
+exports[`full output snapshots (rich schema) inputModel enabled: every generated file 1`] = `
+{
   "__nullable__.ts": 
 "import { Type, type TSchema } from "typebox";
 export const __nullable__ = <T extends TSchema>(schema: T) => Type.Union([Type.Null(), schema]);
@@ -408,14 +439,6 @@ export const __transformDate__ = (options?: Parameters<typeof Type.String>[0]) =
     .Encode((value) => value.toISOString());
 "
 ,
-  "barrel.ts": 
-"export * from "./Account";
-export * from "./Profile";
-export * from "./enums";
-export * from "./__nullable__";
-export * from "./__transformDate__";
-"
-,
   "enums.ts": 
 "import { Type } from "typebox";
 
@@ -424,19 +447,19 @@ export const Role = Type.Enum(["USER", "ADMIN"]);
 export const Status = Type.Enum(["ACTIVE", "SUSPENDED", "DELETED"]);
 "
 ,
-}
-`;
-
-exports[`full output snapshots (rich schema) inputModel enabled: every generated file 1`] = `
-{
-  "Account.ts": 
+  "model.ts": 
+"export * from "./models/Account";
+export * from "./models/Profile";
+"
+,
+  "models/Account.ts": 
 "import { Type } from "typebox";
 
-import { __transformDate__ } from "./__transformDate__";
+import { __transformDate__ } from "../__transformDate__";
 
-import { __nullable__ } from "./__nullable__";
+import { __nullable__ } from "../__nullable__";
 
-import { Role, Status } from "./enums";
+import { Role, Status } from "../enums";
 
 export const AccountPlain = Type.Object(
   {
@@ -751,14 +774,14 @@ export const AccountInputUpdate = Type.Evaluate(
 );
 "
 ,
-  "Profile.ts": 
+  "models/Profile.ts": 
 "import { Type } from "typebox";
 
-import { __transformDate__ } from "./__transformDate__";
+import { __transformDate__ } from "../__transformDate__";
 
-import { __nullable__ } from "./__nullable__";
+import { __nullable__ } from "../__nullable__";
 
-import { Role, Status } from "./enums";
+import { Role, Status } from "../enums";
 
 export const ProfilePlain = Type.Object(
   {
@@ -1055,6 +1078,11 @@ export const ProfileInputUpdate = Type.Evaluate(
 );
 "
 ,
+}
+`;
+
+exports[`full output snapshots (rich schema) useJsonTypes=true: DateTime becomes a formatted string 1`] = `
+{
   "__nullable__.ts": 
 "import { Type, type TSchema } from "typebox";
 export const __nullable__ = <T extends TSchema>(schema: T) => Type.Union([Type.Null(), schema]);
@@ -1068,14 +1096,6 @@ export const __transformDate__ = (options?: Parameters<typeof Type.String>[0]) =
     .Encode((value) => value.toISOString());
 "
 ,
-  "barrel.ts": 
-"export * from "./Account";
-export * from "./Profile";
-export * from "./enums";
-export * from "./__nullable__";
-export * from "./__transformDate__";
-"
-,
   "enums.ts": 
 "import { Type } from "typebox";
 
@@ -1084,19 +1104,19 @@ export const Role = Type.Enum(["USER", "ADMIN"]);
 export const Status = Type.Enum(["ACTIVE", "SUSPENDED", "DELETED"]);
 "
 ,
-}
-`;
-
-exports[`full output snapshots (rich schema) useJsonTypes=true: DateTime becomes a formatted string 1`] = `
-{
-  "Account.ts": 
+  "model.ts": 
+"export * from "./models/Account";
+export * from "./models/Profile";
+"
+,
+  "models/Account.ts": 
 "import { Type } from "typebox";
 
-import { __transformDate__ } from "./__transformDate__";
+import { __transformDate__ } from "../__transformDate__";
 
-import { __nullable__ } from "./__nullable__";
+import { __nullable__ } from "../__nullable__";
 
-import { Role, Status } from "./enums";
+import { Role, Status } from "../enums";
 
 export const AccountPlain = Type.Object(
   {
@@ -1302,14 +1322,14 @@ export const Account = Type.Evaluate(Type.Intersect([AccountPlain, AccountRelati
 });
 "
 ,
-  "Profile.ts": 
+  "models/Profile.ts": 
 "import { Type } from "typebox";
 
-import { __transformDate__ } from "./__transformDate__";
+import { __transformDate__ } from "../__transformDate__";
 
-import { __nullable__ } from "./__nullable__";
+import { __nullable__ } from "../__nullable__";
 
-import { Role, Status } from "./enums";
+import { Role, Status } from "../enums";
 
 export const ProfilePlain = Type.Object(
   {
@@ -1482,6 +1502,11 @@ export const Profile = Type.Evaluate(Type.Intersect([ProfilePlain, ProfileRelati
 });
 "
 ,
+}
+`;
+
+exports[`full output snapshots (rich schema) useJsonTypes="transformer": DateTime uses the __transformDate__ codec 1`] = `
+{
   "__nullable__.ts": 
 "import { Type, type TSchema } from "typebox";
 export const __nullable__ = <T extends TSchema>(schema: T) => Type.Union([Type.Null(), schema]);
@@ -1495,14 +1520,6 @@ export const __transformDate__ = (options?: Parameters<typeof Type.String>[0]) =
     .Encode((value) => value.toISOString());
 "
 ,
-  "barrel.ts": 
-"export * from "./Account";
-export * from "./Profile";
-export * from "./enums";
-export * from "./__nullable__";
-export * from "./__transformDate__";
-"
-,
   "enums.ts": 
 "import { Type } from "typebox";
 
@@ -1511,19 +1528,19 @@ export const Role = Type.Enum(["USER", "ADMIN"]);
 export const Status = Type.Enum(["ACTIVE", "SUSPENDED", "DELETED"]);
 "
 ,
-}
-`;
-
-exports[`full output snapshots (rich schema) useJsonTypes="transformer": DateTime uses the __transformDate__ codec 1`] = `
-{
-  "Account.ts": 
+  "model.ts": 
+"export * from "./models/Account";
+export * from "./models/Profile";
+"
+,
+  "models/Account.ts": 
 "import { Type } from "typebox";
 
-import { __transformDate__ } from "./__transformDate__";
+import { __transformDate__ } from "../__transformDate__";
 
-import { __nullable__ } from "./__nullable__";
+import { __nullable__ } from "../__nullable__";
 
-import { Role, Status } from "./enums";
+import { Role, Status } from "../enums";
 
 export const AccountPlain = Type.Object(
   {
@@ -1729,14 +1746,14 @@ export const Account = Type.Evaluate(Type.Intersect([AccountPlain, AccountRelati
 });
 "
 ,
-  "Profile.ts": 
+  "models/Profile.ts": 
 "import { Type } from "typebox";
 
-import { __transformDate__ } from "./__transformDate__";
+import { __transformDate__ } from "../__transformDate__";
 
-import { __nullable__ } from "./__nullable__";
+import { __nullable__ } from "../__nullable__";
 
-import { Role, Status } from "./enums";
+import { Role, Status } from "../enums";
 
 export const ProfilePlain = Type.Object(
   {
@@ -1909,6 +1926,11 @@ export const Profile = Type.Evaluate(Type.Intersect([ProfilePlain, ProfileRelati
 });
 "
 ,
+}
+`;
+
+exports[`full output snapshots (rich schema) additionalProperties=true: objects allow extra keys 1`] = `
+{
   "__nullable__.ts": 
 "import { Type, type TSchema } from "typebox";
 export const __nullable__ = <T extends TSchema>(schema: T) => Type.Union([Type.Null(), schema]);
@@ -1922,14 +1944,6 @@ export const __transformDate__ = (options?: Parameters<typeof Type.String>[0]) =
     .Encode((value) => value.toISOString());
 "
 ,
-  "barrel.ts": 
-"export * from "./Account";
-export * from "./Profile";
-export * from "./enums";
-export * from "./__nullable__";
-export * from "./__transformDate__";
-"
-,
   "enums.ts": 
 "import { Type } from "typebox";
 
@@ -1938,19 +1952,19 @@ export const Role = Type.Enum(["USER", "ADMIN"]);
 export const Status = Type.Enum(["ACTIVE", "SUSPENDED", "DELETED"]);
 "
 ,
-}
-`;
-
-exports[`full output snapshots (rich schema) additionalProperties=true: objects allow extra keys 1`] = `
-{
-  "Account.ts": 
+  "model.ts": 
+"export * from "./models/Account";
+export * from "./models/Profile";
+"
+,
+  "models/Account.ts": 
 "import { Type } from "typebox";
 
-import { __transformDate__ } from "./__transformDate__";
+import { __transformDate__ } from "../__transformDate__";
 
-import { __nullable__ } from "./__nullable__";
+import { __nullable__ } from "../__nullable__";
 
-import { Role, Status } from "./enums";
+import { Role, Status } from "../enums";
 
 export const AccountPlain = Type.Object({
   id: Type.Integer(),
@@ -2130,14 +2144,14 @@ export const AccountOrderBy = Type.Partial(
 export const Account = Type.Evaluate(Type.Intersect([AccountPlain, AccountRelations]));
 "
 ,
-  "Profile.ts": 
+  "models/Profile.ts": 
 "import { Type } from "typebox";
 
-import { __transformDate__ } from "./__transformDate__";
+import { __transformDate__ } from "../__transformDate__";
 
-import { __nullable__ } from "./__nullable__";
+import { __nullable__ } from "../__nullable__";
 
-import { Role, Status } from "./enums";
+import { Role, Status } from "../enums";
 
 export const ProfilePlain = Type.Object({
   id: Type.Integer(),
@@ -2279,35 +2293,6 @@ export const ProfileOrderBy = Type.Partial(
 );
 
 export const Profile = Type.Evaluate(Type.Intersect([ProfilePlain, ProfileRelations]));
-"
-,
-  "__nullable__.ts": 
-"import { Type, type TSchema } from "typebox";
-export const __nullable__ = <T extends TSchema>(schema: T) => Type.Union([Type.Null(), schema]);
-"
-,
-  "__transformDate__.ts": 
-"import { Type } from "typebox";
-export const __transformDate__ = (options?: Parameters<typeof Type.String>[0]) =>
-  Type.Codec(Type.String({ format: "date-time", ...options }))
-    .Decode((value) => new Date(value))
-    .Encode((value) => value.toISOString());
-"
-,
-  "barrel.ts": 
-"export * from "./Account";
-export * from "./Profile";
-export * from "./enums";
-export * from "./__nullable__";
-export * from "./__transformDate__";
-"
-,
-  "enums.ts": 
-"import { Type } from "typebox";
-
-export const Role = Type.Enum(["USER", "ADMIN"]);
-
-export const Status = Type.Enum(["ACTIVE", "SUSPENDED", "DELETED"]);
 "
 ,
 }

@@ -41,9 +41,9 @@ Then generate:
 npx prisma generate
 ```
 
-PrismaType writes one `.ts` file per model (plus a shared `enums.ts`, a `barrel.ts`
-re-export, and the `__nullable__` / `__transformDate__` helpers) into the `output`
-directory.
+PrismaType writes one `.ts` file per model into a `models/` subdirectory of the `output`
+directory, plus a shared `enums.ts`, a `model.ts` re-export, and the `__nullable__` /
+`__transformDate__` helpers at the output root.
 
 > ⚠️ The output directory is **wiped and recreated on every generate**. Point `output` at
 > a folder that PrismaType fully owns — don't keep hand-written files there.

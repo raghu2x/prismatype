@@ -9,8 +9,8 @@ export const ${getConfig().nullableName} = <T extends TSchema>(schema: T) => ${
   }.Union([${getConfig().typeboxImportVariableName}.Null(), schema])\n`;
 }
 
-export function nullableImport() {
-  return `import { ${getConfig().nullableName} } from "./${
+export function nullableImport(pathPrefix = "./") {
+  return `import { ${getConfig().nullableName} } from "${pathPrefix}${
     getConfig().nullableName
   }${getConfig().importFileExtension}"\n`;
 }

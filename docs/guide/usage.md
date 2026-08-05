@@ -1,7 +1,7 @@
 # Using the Schemas
 
 The generated files are plain [TypeBox](https://github.com/sinclairzx81/typebox) schema
-objects, so you use them like any other TypeBox schema. Import from the `barrel.ts`
+objects, so you use them like any other TypeBox schema. Import from the `model.ts`
 re-export file and validate data at runtime or derive a static type, from the exact same
 object.
 
@@ -10,7 +10,7 @@ object.
 ```ts
 import type { Static } from "typebox";
 import { Value } from "typebox/value";
-import { Post, PostInputCreate } from "./prismatype/barrel";
+import { Post, PostInputCreate } from "./prismatype/model";
 
 // Runtime validation
 if (!Value.Check(PostInputCreate, req.body)) {
@@ -29,7 +29,7 @@ TypeBox, such as [Elysia](https://elysiajs.com/) or
 
 ```ts
 import { Elysia } from "elysia";
-import { PostInputCreate } from "./prismatype/barrel";
+import { PostInputCreate } from "./prismatype/model";
 
 new Elysia().post("/posts", ({ body }) => createPost(body), {
   body: PostInputCreate,

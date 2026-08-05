@@ -165,11 +165,3 @@ File extension added to imports between generated files. Set to `".js"` to suppo
 - **Default:** `""`
 
 Prefix added to every exported schema name.
-
-### `enumsFileName`
-
-- **Type:** `string`
-- **Default:** `"enums"`
-
-Name (without extension) of the file all generated enums are emitted into and imported
-from by model files.

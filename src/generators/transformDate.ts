@@ -8,8 +8,8 @@ export function transformDateType() {
    .Encode((value) => value.toISOString())\n`;
 }
 
-export function transformDateImportStatement() {
-  return `import { ${getConfig().transformDateName} } from "./${
+export function transformDateImportStatement(pathPrefix = "./") {
+  return `import { ${getConfig().transformDateName} } from "${pathPrefix}${
     getConfig().transformDateName
   }${getConfig().importFileExtension}"\n`;
 }

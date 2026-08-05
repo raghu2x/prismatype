@@ -82,22 +82,41 @@ export function runPipeline() {
   return runPipelineOn(pipelineModels, pipelineEnums);
 }
 
-/** Reads a generated `<name>.ts` file from the output directory. */
+/**
+ * Reads a generated per-model `<name>.ts` file from the `models/`
+ * subdirectory of the output directory.
+ */
 export function readOutput(dir: string, name: string) {
+  return readFile(join(dir, "models", `${name}.ts`), "utf-8");
+}
+
+/** Reads a generated root-level `<name>.ts` file (enums, helpers, model barrel). */
+export function readRootOutput(dir: string, name: string) {
   return readFile(join(dir, `${name}.ts`), "utf-8");
 }
 
 /**
  * Reads every generated file in the output directory into a name->contents
- * map, sorted by filename for stable snapshots. Reading the whole directory
- * (rather than a hand-picked list) guarantees no emitted file — model, enum,
- * helper or barrel — is silently left out of a snapshot.
+ * map, sorted by filename for stable snapshots. Recurses into the `models/`
+ * subdirectory so per-model files show up as `models/<Name>.ts`. Reading the
+ * whole tree (rather than a hand-picked list) guarantees no emitted file —
+ * model, enum, helper or the model barrel — is silently left out of a snapshot.
  */
 export async function readAllOutputs(dir: string): Promise<Record<string, string>> {
-  const files = (await readdir(dir)).sort();
   const out: Record<string, string> = {};
-  for (const file of files) {
-    out[file] = await readFile(join(dir, file), "utf-8");
+  const entries = (await readdir(dir, { withFileTypes: true })).sort((a, b) =>
+    a.name.localeCompare(b.name),
+  );
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const subdir = join(dir, entry.name);
+      const files = (await readdir(subdir)).sort();
+      for (const file of files) {
+        out[`${entry.name}/${file}`] = await readFile(join(subdir, file), "utf-8");
+      }
+    } else {
+      out[entry.name] = await readFile(join(dir, entry.name), "utf-8");
+    }
   }
   return out;
 }

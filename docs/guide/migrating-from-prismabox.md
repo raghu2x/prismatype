@@ -109,8 +109,7 @@ don't change. The configuration keys are otherwise identical, with two things to
   either add an explicit `output` or update your import paths to the new default.
 
 Every option prismabox supported is still supported and behaves the same way. See the
-[Configuration](/guide/configuration) page for the full list, including the new
-[`enumsFileName`](/guide/configuration) option.
+[Configuration](/guide/configuration) page for the full list.
 
 ### 3. Rename annotations
 
@@ -208,11 +207,39 @@ per-enum file to point at the shared enums file instead:
 import { Role } from "./generated/schema/Role";
 import { Status } from "./generated/schema/Status";
 
-// After (PrismaType: single shared enums file)
+// After (PrismaType: single shared enums file at the output root)
 import { Role, Status } from "./generated/schema/enums";
 ```
 
-You can rename that file with the [`enumsFileName`](/guide/configuration) option.
+### Per-model files live in a `models/` subdirectory
+
+prismabox writes each model's file directly into the output directory. PrismaType writes
+per-model files into a **`models/`** subdirectory (the shared `enums.ts` and the
+`__nullable__` / `__transformDate__` helpers stay at the output root). Update any imports
+that reached into a per-model file to include the `models/` segment:
+
+```ts
+// Before (prismabox: model files at the output root)
+import { Post } from "./generated/schema/Post";
+
+// After (PrismaType: model files under models/)
+import { Post } from "./generated/schema/models/Post";
+```
+
+### `model.ts` replaces `barrel.ts`
+
+prismabox emits a `barrel.ts` that re-exports every generated file (models, enums, and
+helpers). PrismaType emits a **`model.ts`** at the output root that re-exports only the
+model files, so importing everything from one place still works. Update any barrel import
+to point at `model.ts`:
+
+```ts
+// Before (prismabox: re-export barrel)
+import { Post, PostInputCreate } from "./generated/schema/barrel";
+
+// After (PrismaType: model barrel)
+import { Post, PostInputCreate } from "./generated/schema/model";
+```
 
 ## Behavior that carries over unchanged
 

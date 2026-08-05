@@ -29,7 +29,7 @@ describe("mapAllModelsForWrite", () => {
       relations: [{ name: "User", stringRepresentation: "Type.Object({})" }],
     });
 
-    const file = mapAllModelsForWrite(collections).get("User");
+    const file = mapAllModelsForWrite(collections).models.get("User");
     expect(file).toBeDefined();
     expect(file).toContain("export const UserPlain =");
     expect(file).toContain("export const UserRelations =");
@@ -43,7 +43,7 @@ describe("mapAllModelsForWrite", () => {
       plain: [{ name: "User", stringRepresentation: "Type.Object({})" }],
     });
 
-    const file = mapAllModelsForWrite(collections).get("User");
+    const file = mapAllModelsForWrite(collections).models.get("User");
     expect(file).toContain("export const User = UserPlain");
   });
 
@@ -52,7 +52,7 @@ describe("mapAllModelsForWrite", () => {
       plain: [{ name: "User", stringRepresentation: "Type.Object({})" }],
     });
 
-    const file = mapAllModelsForWrite(collections).get("User")!;
+    const file = mapAllModelsForWrite(collections).models.get("User")!;
     expect(file).toContain('import { Type } from "typebox"');
     expect(file).toContain("import { __nullable__ }");
     expect(file).toContain("import { __transformDate__ }");
@@ -64,24 +64,25 @@ describe("mapAllModelsForWrite", () => {
       plain: [{ name: "User", stringRepresentation: "Type.Object({ role: Role })" }],
     });
 
-    const map = mapAllModelsForWrite(collections);
-    expect(map.get("User")).toContain('import { Role } from "./enums"');
+    const { models } = mapAllModelsForWrite(collections);
+    // Model files live in `models/`; the enums file is at the output root.
+    expect(models.get("User")).toContain('import { Role } from "../enums"');
   });
 
-  test("emits an enums file when enums are present", () => {
+  test("emits an enums file at the root when enums are present", () => {
     const collections = emptyCollections({
       enums: [{ name: "Role", stringRepresentation: "Type.Enum(['A'])" }],
     });
 
-    const map = mapAllModelsForWrite(collections);
-    expect(map.has("enums")).toBe(true);
-    expect(map.get("enums")).toContain("export const Role =");
+    const { root } = mapAllModelsForWrite(collections);
+    expect(root.has("enums")).toBe(true);
+    expect(root.get("enums")).toContain("export const Role =");
   });
 
-  test("always emits the nullable and transformDate helper files", () => {
-    const map = mapAllModelsForWrite(emptyCollections());
-    expect(map.has("__nullable__")).toBe(true);
-    expect(map.has("__transformDate__")).toBe(true);
+  test("always emits the nullable and transformDate helper files at the root", () => {
+    const { root } = mapAllModelsForWrite(emptyCollections());
+    expect(root.has("__nullable__")).toBe(true);
+    expect(root.has("__transformDate__")).toBe(true);
   });
 
   test("synthesizes InputCreate and InputUpdate composites", () => {
@@ -92,7 +93,7 @@ describe("mapAllModelsForWrite", () => {
       relationsInputUpdate: [{ name: "User", stringRepresentation: "Type.Object({})" }],
     });
 
-    const file = mapAllModelsForWrite(collections).get("User")!;
+    const file = mapAllModelsForWrite(collections).models.get("User")!;
     expect(file).toContain("export const UserInputCreate =");
     expect(file).toContain("export const UserInputUpdate =");
   });

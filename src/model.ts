@@ -1,4 +1,4 @@
-import { getConfig } from "./config";
+import { ENUMS_FILE_NAME, getConfig } from "./config";
 import { getUsedEnumImports } from "./generators/enum";
 import { transformDateImportStatement, transformDateType } from "./generators/transformDate";
 import { makeComposite } from "./generators/wrappers/composite";
@@ -7,6 +7,19 @@ import { nullableImport, nullableType } from "./generators/wrappers/nullable";
 export type ProcessedModel = {
   name: string;
   stringRepresentation: string;
+};
+
+/**
+ * The assembled files for a generate run, split by where they live on disk:
+ * per-model files go into the `models/` subdirectory, everything else
+ * (the shared enums file and the `__nullable__` / `__transformDate__` helpers)
+ * lives at the output root next to `model.ts`.
+ */
+export type AssembledFiles = {
+  /** name (without extension) -> file contents, written under `models/`. */
+  models: Map<string, string>;
+  /** name (without extension) -> file contents, written at the output root. */
+  root: Map<string, string>;
 };
 
 /**
@@ -42,9 +55,11 @@ function typepoxImportStatement() {
 function enumImportStatement(content: string, processedEnums: ProcessedModel[]) {
   const usedEnums = getUsedEnumImports(content, processedEnums);
   if (usedEnums.length === 0) return "";
-  return `import { ${usedEnums.join(", ")} } from "./${
-    getConfig().enumsFileName
-  }${getConfig().importFileExtension}"\n`;
+  // Model files live in the `models/` subdirectory; the enums file is at the
+  // output root, so reach it with `../`.
+  return `import { ${usedEnums.join(", ")} } from "../${ENUMS_FILE_NAME}${
+    getConfig().importFileExtension
+  }"\n`;
 }
 
 function stringifyEnumsFile(processedEnums: ProcessedModel[]) {
@@ -58,7 +73,7 @@ function stringifyEnumsFile(processedEnums: ProcessedModel[]) {
     .join("\n");
 }
 
-export function mapAllModelsForWrite(collections: Collections) {
+export function mapAllModelsForWrite(collections: Collections): AssembledFiles {
   const {
     enums: processedEnums,
     plain: processedPlain,
@@ -156,25 +171,25 @@ export function mapAllModelsForWrite(collections: Collections) {
     }
   }
 
+  // Model files live in `models/`, so their imports of the root-level helper
+  // and enums files must reach up one directory with `../`.
   for (const [key, value] of modelsPerName) {
     modelsPerName.set(
       key,
-      `${typepoxImportStatement()}\n${transformDateImportStatement()}\n${nullableImport()}\n${enumImportStatement(
-        value,
-        processedEnums,
-      )}\n${value}`,
+      `${typepoxImportStatement()}\n${transformDateImportStatement("../")}\n${nullableImport(
+        "../",
+      )}\n${enumImportStatement(value, processedEnums)}\n${value}`,
     );
   }
+
+  const root = new Map<string, string>();
 
   if (processedEnums.length > 0) {
-    modelsPerName.set(
-      getConfig().enumsFileName,
-      `${typepoxImportStatement()}\n${stringifyEnumsFile(processedEnums)}`,
-    );
+    root.set(ENUMS_FILE_NAME, `${typepoxImportStatement()}\n${stringifyEnumsFile(processedEnums)}`);
   }
 
-  modelsPerName.set(getConfig().nullableName, nullableType());
-  modelsPerName.set(getConfig().transformDateName, transformDateType());
+  root.set(getConfig().nullableName, nullableType());
+  root.set(getConfig().transformDateName, transformDateType());
 
-  return modelsPerName;
+  return { models: modelsPerName, root };
 }

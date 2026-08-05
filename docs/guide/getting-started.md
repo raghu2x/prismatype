@@ -68,11 +68,11 @@ Run Prisma's generate command:
 npx prisma generate
 ```
 
-PrismaType runs as part of `prisma generate` and writes one `.ts` file per model into the
-`output` directory, plus:
+PrismaType runs as part of `prisma generate` and writes one `.ts` file per model into a
+`models/` subdirectory of the `output` directory, plus, at the output root:
 
 - a shared `enums.ts` file that every model using an enum imports from,
-- a `barrel.ts` re-export file so you can import everything from one place,
+- a `model.ts` re-export file so you can import every model from one place,
 - the `__nullable__` and `__transformDate__` helper files.
 
 ::: danger The output directory is wiped on every generate

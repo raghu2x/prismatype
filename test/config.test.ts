@@ -13,7 +13,6 @@ describe("config", () => {
     expect(c.inputModel).toBe(false);
     expect(c.nullableName).toBe("__nullable__");
     expect(c.transformDateName).toBe("__transformDate__");
-    expect(c.enumsFileName).toBe("enums");
   });
 
   test("coerces string booleans from the generator block", () => {

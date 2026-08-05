@@ -1,6 +1,26 @@
 import { type Static, Type } from "typebox";
 import { Value } from "typebox/value";
 
+/**
+ * Fixed filename (without extension) that all generated enums are emitted into
+ * and imported from by model files. Enums live at the output root, alongside
+ * `model.ts` and the helper modules; model files sit in the `models/`
+ * subdirectory and import enums via `../enums`.
+ */
+export const ENUMS_FILE_NAME = "enums";
+
+/**
+ * Subdirectory (relative to the output root) that per-model files are written
+ * into. The root-level `model.ts` re-exports every file in here.
+ */
+export const MODELS_DIR_NAME = "models";
+
+/**
+ * Filename (without extension) of the root-level barrel that re-exports every
+ * generated model file. It does not re-export the shared enums or helper files.
+ */
+export const MODEL_BARREL_FILE_NAME = "model";
+
 const configSchema = Type.Object(
   {
     /**
@@ -86,11 +106,6 @@ const configSchema = Type.Object(
      * The prefix to add to exported types
      */
     exportedTypePrefix: Type.String({ default: "" }),
-    /**
-     * The name of the file (without extension) that all generated enums are
-     * emitted into and imported from by model files
-     */
-    enumsFileName: Type.String({ default: "enums" }),
   },
   { additionalProperties: false },
 );

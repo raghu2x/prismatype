@@ -26,9 +26,10 @@ validation (`Value.Check`) and compile-time types (`Static`).
 ### Generator
 
 - Runs as a `prisma generate` plugin: PrismaType consumes the DMMF and writes one
-  `.ts` file per model into the configured `output` directory.
-- Each generate run also emits a shared `enums.ts`, a `barrel.ts` re-export, and the
-  `__nullable__` / `__transformDate__` helpers.
+  `.ts` file per model into a `models/` subdirectory of the configured `output`
+  directory.
+- Each generate run also emits, at the output root, a shared `enums.ts`, a `model.ts`
+  re-export of every model file, and the `__nullable__` / `__transformDate__` helpers.
 - Targets **TypeBox 1.x**, using `Type.Refine` wrappers for `DateTime` and `Bytes`
   in place of the removed `Type.Date` / `Type.Uint8Array`.
 
