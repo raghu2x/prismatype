@@ -165,3 +165,43 @@ File extension added to imports between generated files. Set to `".js"` to suppo
 - **Default:** `""`
 
 Prefix added to every exported schema name.
+
+### `deriveDbStringConstraints` <Badge type="tip" text="+v1.2.0" />
+
+- **Type:** `boolean`
+- **Default:** `false`
+
+When enabled, length-bearing native column types contribute a `maxLength`
+constraint to the generated string schema. `@db.VarChar(n)` and `@db.Char(n)`
+(and their provider variants, e.g. `NVarChar`, `NChar`) both derive
+`maxLength: n`; length-less types like `@db.Text` derive nothing.
+
+The constraint is applied to the **input models only**, `InputCreate` and
+`InputUpdate`, where user-supplied data is validated. The plain output model and
+the `Where` schemas are left unconstrained.
+
+An explicit [`@prismatype.options{maxLength: ...}`](/guide/annotations) on a
+field always overrides the derived value, and fields with a
+[`@prismatype.typeOverwrite`](/guide/annotations) are skipped entirely.
+
+```prisma
+model Item {
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(120)
+}
+```
+
+```ts
+// InputCreate
+name: Type.String({ maxLength: 120 });
+// InputUpdate
+name: Type.Optional(Type.String({ maxLength: 120 }));
+// Plain (unconstrained)
+name: Type.String();
+```
+
+::: warning
+Off by default so regenerating never tightens validation unexpectedly. Enabling
+it can make previously accepted over-length input fail `Value.Check` on the
+input models.
+:::

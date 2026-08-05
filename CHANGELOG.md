@@ -5,6 +5,30 @@ All notable changes to PrismaType are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - unreleased
+
+### Added
+
+- **`deriveDbStringConstraints`** generator option (default `false`). When enabled,
+  length-bearing native column types (`@db.VarChar(n)`, `@db.Char(n)` and their
+  provider variants) contribute a `maxLength: n` constraint to the generated string
+  schema. The constraint is applied to the input models only (`InputCreate` and
+  `InputUpdate`); the plain output model and `Where` schemas are left unconstrained.
+  An explicit `@prismatype.options{maxLength}` overrides the derived value, and fields
+  with a `@prismatype.typeOverwrite` are skipped. This is the first use of the DMMF's
+  `field.nativeType`. See [Configuration](/guide/configuration#derivedbstringconstraints).
+
+## [1.1.0] - 2026-08-05
+
+### Changed
+
+- Per-model files are now emitted into a `models/` subdirectory of the `output`
+  directory, and the re-export barrel is a root-level `model.ts` (replacing the
+  previous `barrel.ts`) that re-exports every model file. Because model files sit
+  one directory deeper, their imports of the shared `enums.ts` and helper files use
+  `../`.
+- The bundled CLI (`dist/cli.js`) is now built as ESM instead of CJS.
+
 ## [1.0.1] - 2026-07-29
 
 ### Recursion
@@ -59,5 +83,7 @@ validation (`Value.Check`) and compile-time types (`Static`).
   `allowRecursion`, `useJsonTypes`, `additionalProperties`, and a configurable
   TypeBox import variable name. All options are validated with a TypeBox schema.
 
+[1.2.0]: https://github.com/raghu2x/prismatype/releases/tag/v1.2.0
+[1.1.0]: https://github.com/raghu2x/prismatype/releases/tag/v1.1.0
 [1.0.1]: https://github.com/raghu2x/prismatype/releases/tag/v1.0.1
 [1.0.0]: https://github.com/raghu2x/prismatype/releases/tag/v1.0.0
