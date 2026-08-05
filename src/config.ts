@@ -106,6 +106,20 @@ const configSchema = Type.Object(
      * The prefix to add to exported types
      */
     exportedTypePrefix: Type.String({ default: "" }),
+    /**
+     * When enabled, length-bearing native column types (`@db.VarChar(n)`,
+     * `@db.Char(n)` and their provider variants) contribute a `maxLength: n`
+     * constraint to the generated string schema. Only the input models
+     * (InputCreate and InputUpdate) receive the derived constraint; the plain
+     * output model and where schemas are left unconstrained.
+     *
+     * An explicit `@prismatype.options{maxLength: ...}` on the field always
+     * overrides the derived value, and fields with a `@prismatype.typeOverwrite`
+     * are skipped entirely.
+     *
+     * Off by default to keep regeneration non-breaking; opt in for a major bump.
+     */
+    deriveDbStringConstraints: Type.Boolean({ default: false }),
   },
   { additionalProperties: false },
 );

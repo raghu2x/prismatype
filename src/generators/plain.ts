@@ -95,7 +95,12 @@ export function stringifyPlain(
       // nullability / optionality wrapping below.
       let stringifiedType =
         (field.kind === "object" ? compositeSchemas.get(field.type) : undefined) ??
-        stringifyFieldType(field, annotations, processedEnums);
+        stringifyFieldType(
+          field,
+          annotations,
+          processedEnums,
+          isInputModelCreate || isInputModelUpdate,
+        );
 
       if (stringifiedType === undefined) {
         return undefined;

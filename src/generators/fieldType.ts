@@ -1,8 +1,10 @@
 import type { DMMF } from "@prisma/generator-helper";
 import { type extractAnnotations, isTypeOverwriteVariant } from "../annotations/annotations";
 import { generateTypeboxOptions } from "../annotations/options";
+import { getConfig } from "../config";
 import type { ProcessedModel } from "../model";
 import { enumNameToExportedName } from "./enum";
+import { deriveNativeTypeOptions } from "./nativeType";
 import {
   isPrimitivePrismaFieldType,
   type PrimitivePrismaFieldType,
@@ -21,11 +23,16 @@ import {
  * Returns `undefined` for relation fields (anything that is neither a
  * primitive nor a known enum). Callers own list wrapping, nullability,
  * optionality and hidden-field filtering.
+ *
+ * `isInput` marks calls originating from the input models (InputCreate /
+ * InputUpdate). Only those calls derive DB-native constraints (e.g. a
+ * `maxLength` from `@db.VarChar(n)`) when `deriveDbStringConstraints` is on.
  */
 export function stringifyFieldType(
   field: DMMF.Field,
   annotations: ReturnType<typeof extractAnnotations>,
   processedEnums: ProcessedModel[],
+  isInput = false,
 ): string | undefined {
   if (isPrimitivePrismaFieldType(field.type)) {
     const overwrittenType = annotations.annotations.filter(isTypeOverwriteVariant).at(0)?.value;
@@ -34,11 +41,22 @@ export function stringifyFieldType(
       return overwrittenType;
     }
 
+    // Derive DB-native constraints only for input models, only when enabled,
+    // and never for overwritten types (handled by the early return above).
+    const derivedOptions: string[] = [];
+    if (isInput && getConfig().deriveDbStringConstraints) {
+      const nativeOption = deriveNativeTypeOptions(field);
+      if (nativeOption) {
+        derivedOptions.push(nativeOption);
+      }
+    }
+
     return stringifyPrimitiveType({
       fieldType: field.type as PrimitivePrismaFieldType,
       options: generateTypeboxOptions({
         excludeAdditionalProperties: false,
         input: annotations,
+        derivedOptions,
       }),
     });
   }

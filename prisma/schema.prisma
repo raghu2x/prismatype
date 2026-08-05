@@ -13,6 +13,7 @@ generator prismatype {
   additionalFieldsPlain       = ["additional: Type.Optional(Type.String())"]
   useJsonTypes                = true
   allowRecursion              = true
+  deriveDbStringConstraints   = true
   typeboxImportDependencyName = "typebox"
   typeboxImportVariableName   = "Type"
 }
@@ -38,14 +39,14 @@ model Token {
 
 model Item {
   id         Int      @id @default(autoincrement())
-  name       String
+  name       String   @db.VarChar(120)
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id])
 }
 
 model Category {
   id   Int    @id @default(autoincrement())
-  name String @unique
+  name String @unique @db.VarChar(80)
   Item Item[]
 }
 
@@ -75,7 +76,7 @@ model User {
   id                             String                        @id @default(uuid())
   createdAt                      DateTime                      @default(now())
   updatedAt                      DateTime                      @updatedAt
-  name                           String
+  name                           String                        @db.VarChar(255)
   conferenceMemberships          ConferenceMember[]
   committeeMemberships           CommitteeMember[]
   messages                       Message[]
@@ -296,7 +297,7 @@ enum NationVariant {
 /// A nation in the system. E.g. Germany
 model Nation {
   id          String        @id @default(uuid())
-  alpha3Code  String        @unique
+  alpha3Code  String        @unique @db.Char(3)
   variant     NationVariant @default(NATION)
   delegations Delegation[]
 }
