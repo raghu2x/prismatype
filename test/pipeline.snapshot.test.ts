@@ -67,4 +67,10 @@ describe("full output snapshots (rich schema)", () => {
       expect(await readAllOutputs(dir)).toMatchSnapshot();
     });
   });
+
+  test("deriveDbStringConstraints: input models derive maxLength from native types", async () => {
+    await withOutput({ inputModel: true, deriveDbStringConstraints: true }, async (dir) => {
+      expect(await readAllOutputs(dir)).toMatchSnapshot();
+    });
+  });
 });

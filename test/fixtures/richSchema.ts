@@ -18,6 +18,10 @@ import { datamodelEnum, field, model } from "./dmmf";
  *  - the three annotation kinds that change output — `@prismatype.hide`,
  *    `@prismatype.options{...}`, `@prismatype.typeOverwrite=` — plus a plain
  *    `///` description;
+ *  - length-bearing native column types (`@db.VarChar(n)`, `@db.Char(n)`) so
+ *    the input-only `deriveDbStringConstraints` snapshot pins the derived
+ *    `maxLength`, including the case where an explicit `@prismatype.options`
+ *    overrides the derived value;
  *  - two visible enums and one hidden enum (dropped from the enums file);
  *  - a one-to-many relation, its back-reference, and a self-relation so the
  *    relations / where-recursion output is captured.
@@ -50,6 +54,17 @@ export const richModels: DMMF.Model[] = [
       type: "String",
       isRequired: false,
       documentation: "The display name.\n@prismatype.options{maxLength:32}",
+    }),
+    // Length-bearing native column types: only the input models derive a
+    // maxLength from these (and only when deriveDbStringConstraints is on).
+    field({ name: "handle", type: "String", nativeType: ["VarChar", ["120"]] }),
+    field({ name: "countryCode", type: "String", nativeType: ["Char", ["3"]] }),
+    // Explicit annotation wins over the derived maxLength.
+    field({
+      name: "slug",
+      type: "String",
+      nativeType: ["VarChar", ["200"]],
+      documentation: "@prismatype.options{maxLength:16}",
     }),
     field({
       name: "external",
