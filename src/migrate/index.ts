@@ -15,7 +15,7 @@ import { type Change, migratePackageJson, migrateSchema, migrateSourceImports } 
  */
 
 /** Version ranges written into package.json for the packages we add. */
-const ADDED_VERSIONS = { prismatype: "^1.1.0", typebox: "^1.3.7" };
+const ADDED_VERSIONS = { prismatype: "^1.2.0", typebox: "^1.3.7" };
 
 /** Directories never worth walking when hunting for source files. */
 const IGNORED_DIRS = new Set([
