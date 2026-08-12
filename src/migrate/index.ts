@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 import type { Dirent } from "node:fs";
 import { readdir, readFile, writeFile } from "node:fs/promises";
-import { basename, join, relative, resolve } from "node:path";
+import { basename, dirname, join, relative, resolve } from "node:path";
 import { type Change, migratePackageJson, migrateSchema, migrateSourceImports } from "./transforms";
 
 /**
@@ -14,8 +14,11 @@ import { type Change, migratePackageJson, migrateSchema, migrateSourceImports } 
  * does not regenerate, both of which are left to the user.
  */
 
-/** Version ranges written into package.json for the packages we add. */
-const ADDED_VERSIONS = { prismatype: "^1.2.0", typebox: "^1.3.7" };
+/**
+ * Version range written into package.json for prismatype. TypeBox is left to
+ * the user, so nothing else is added.
+ */
+const ADDED_VERSIONS = { prismatype: "^1.2.1" };
 
 /** Directories never worth walking when hunting for source files. */
 const IGNORED_DIRS = new Set([
@@ -122,6 +125,85 @@ export function readEnumNames(schema: string): Set<string> {
 }
 
 /**
+ * Collects tsconfig path aliases that resolve into one of the generated output
+ * directories, so imports written through an alias are rewritten too.
+ *
+ * A tsconfig like:
+ *
+ * ```json
+ * "paths": {
+ *   "@generated/*":  ["./generated/*"],
+ *   "@prismabox/*":  ["./generated/prismabox/*"]
+ * }
+ * ```
+ *
+ * makes `@prismabox/Section` equivalent to `generated/prismabox/Section`. The
+ * alias is the output root itself, so matching on the output directory's name
+ * alone never sees it. Registering `@prismabox` as an additional anchor fixes
+ * that.
+ *
+ * JSON with comments (tsconfig allows them) is tolerated by stripping comments
+ * before parsing.
+ */
+export function readTsconfigAliases(
+  tsconfig: string,
+  outputPaths: ReadonlySet<string>,
+): Set<string> {
+  const aliases = new Set<string>();
+
+  // Strip line and block comments, plus trailing commas, so JSON.parse accepts
+  // a typical tsconfig.
+  const stripped = tsconfig
+    .replaceAll(/\/\*[\s\S]*?\*\//g, "")
+    .replaceAll(/(^|[^:"'\\])\/\/.*$/gm, "$1")
+    .replaceAll(/,(\s*[}\]])/g, "$1");
+
+  let parsed: { compilerOptions?: { paths?: Record<string, string[]> } };
+  try {
+    parsed = JSON.parse(stripped);
+  } catch {
+    return aliases;
+  }
+
+  const paths = parsed.compilerOptions?.paths;
+  if (!paths) {
+    return aliases;
+  }
+
+  // Normalise an output path to a comparable, slash-separated form with no
+  // leading "./" so alias targets and generator outputs can be compared.
+  const normalise = (value: string) =>
+    value
+      .replaceAll("\\", "/")
+      .replace(/^\.\//, "")
+      .replace(/\/?\*?$/, "")
+      .replace(/\/$/, "");
+
+  const normalisedOutputs = new Set(Array.from(outputPaths, normalise));
+
+  for (const [alias, targets] of Object.entries(paths)) {
+    if (!Array.isArray(targets)) {
+      continue;
+    }
+
+    for (const target of targets) {
+      if (typeof target !== "string") {
+        continue;
+      }
+
+      // Only aliases pointing at the output root itself are useful as anchors;
+      // an alias for a parent directory (e.g. "@generated" -> "./generated")
+      // already matches via the output directory's own name.
+      if (normalisedOutputs.has(normalise(target))) {
+        aliases.add(alias.replace(/\/?\*?$/, ""));
+      }
+    }
+  }
+
+  return aliases;
+}
+
+/**
  * Runs the migration and returns every edit it made (or would make under
  * `dryRun`). Throws when the working tree isn't safe and `force` is not set.
  */
@@ -149,6 +231,7 @@ export async function migrateProject(options: MigrateOptions): Promise<FileEdit[
   // Migrate every schema, tracking the output dir(s) that generated files land
   // in so import rewriting knows what to anchor on.
   const outputBaseNames = new Set<string>();
+  const outputPaths = new Set<string>();
   const enumNames = new Set<string>();
 
   for (const path of schemaPaths) {
@@ -161,6 +244,10 @@ export async function migrateProject(options: MigrateOptions): Promise<FileEdit[
 
     if (result.previousOutput) {
       outputBaseNames.add(basename(result.previousOutput));
+      // Resolve the output relative to the schema's directory (Prisma treats it
+      // that way), then make it relative to the project root so it can be
+      // compared against tsconfig alias targets.
+      outputPaths.add(relative(cwd, resolve(dirname(path), result.previousOutput)));
     }
 
     if (result.changes.length > 0) {
@@ -178,20 +265,33 @@ export async function migrateProject(options: MigrateOptions): Promise<FileEdit[
     return edits;
   }
 
+  // Anchors are the output directory names plus any tsconfig alias that points
+  // straight at an output directory (e.g. "@prismabox" -> generated/prismabox),
+  // since such an alias replaces the directory name entirely in import paths.
+  const anchors = new Set(outputBaseNames);
+
+  for (const tsconfigPath of await collectFiles(cwd, (path) =>
+    /(^|[\\/])tsconfig(\.[\w-]+)?\.json$/.test(path),
+  )) {
+    try {
+      const tsconfig = await readFile(tsconfigPath, "utf8");
+      for (const alias of readTsconfigAliases(tsconfig, outputPaths)) {
+        anchors.add(alias);
+      }
+    } catch {
+      // An unreadable tsconfig just means no aliases to add.
+    }
+  }
+
   const sourcePaths = await collectFiles(cwd, (path) =>
     SOURCE_EXTENSIONS.some((extension) => path.endsWith(extension)),
   );
 
   for (const path of sourcePaths) {
     const original = await readFile(path, "utf8");
-    let content = original;
-    const changes: Change[] = [];
-
-    for (const outputBaseName of outputBaseNames) {
-      const result = migrateSourceImports(content, outputBaseName, enumNames);
-      content = result.content;
-      changes.push(...result.changes);
-    }
+    const result = migrateSourceImports(original, anchors, enumNames);
+    const content = result.content;
+    const changes = result.changes;
 
     if (changes.length > 0) {
       if (!dryRun) {

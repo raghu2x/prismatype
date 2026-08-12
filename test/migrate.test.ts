@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { readEnumNames } from "../src/migrate/index";
+import { readEnumNames, readTsconfigAliases } from "../src/migrate/index";
 import {
+  mergeDuplicateImports,
   migrateAnnotations,
   migrateImportSpecifier,
   migratePackageJson,
@@ -8,7 +9,7 @@ import {
   migrateSourceImports,
 } from "../src/migrate/transforms";
 
-const VERSIONS = { prismatype: "^1.2.0", typebox: "^1.3.7" };
+const VERSIONS = { prismatype: "^1.2.1" };
 
 describe("migrateSchema", () => {
   test("renames the generator block, provider, and annotations", () => {
@@ -192,6 +193,122 @@ describe("migrateImportSpecifier", () => {
       "../../generated/schema/models/Post",
     );
   });
+
+  test("rewrites a tsconfig alias that points straight at the output dir", () => {
+    // "@prismabox" -> generated/prismabox: the alias replaces the directory
+    // name entirely, so there is no leading path segment to anchor on.
+    const anchors = new Set(["prismabox", "@prismabox"]);
+
+    expect(migrateImportSpecifier("@prismabox/Section", anchors, enums)).toBe(
+      "@prismabox/models/Section",
+    );
+    expect(migrateImportSpecifier("@prismabox/Role", anchors, enums)).toBe("@prismabox/enums");
+  });
+
+  test("prefers the longest matching anchor", () => {
+    // Both "prismabox" and "@generated/prismabox" match; the longer prefix must
+    // win so the rewritten path keeps its full alias.
+    const anchors = new Set(["prismabox", "@generated/prismabox"]);
+
+    expect(migrateImportSpecifier("@generated/prismabox/Post", anchors, enums)).toBe(
+      "@generated/prismabox/models/Post",
+    );
+  });
+});
+
+describe("readTsconfigAliases", () => {
+  const outputs = new Set(["generated/prismabox"]);
+
+  test("finds aliases pointing at the output directory", () => {
+    const tsconfig = `{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@generated/*": ["./generated/*"],
+      "@prismabox/*": ["./generated/prismabox/*"]
+    }
+  }
+}`;
+
+    const aliases = readTsconfigAliases(tsconfig, outputs);
+
+    expect(aliases.has("@prismabox")).toBe(true);
+    // "@generated" points at the parent, which already matches via the output
+    // directory's own name, so it is not needed as an extra anchor.
+    expect(aliases.has("@generated")).toBe(false);
+    expect(aliases.has("@")).toBe(false);
+  });
+
+  test("tolerates comments and trailing commas", () => {
+    const tsconfig = `{
+  // tsconfig allows comments
+  "compilerOptions": {
+    /* and block comments */
+    "paths": {
+      "@prismabox/*": ["./generated/prismabox/*"],
+    },
+  },
+}`;
+
+    expect(readTsconfigAliases(tsconfig, outputs).has("@prismabox")).toBe(true);
+  });
+
+  test("returns nothing for an unparseable or path-less tsconfig", () => {
+    expect(readTsconfigAliases("{ not json", outputs).size).toBe(0);
+    expect(readTsconfigAliases('{"compilerOptions":{}}', outputs).size).toBe(0);
+  });
+});
+
+describe("mergeDuplicateImports", () => {
+  test("merges repeated imports of the same module", () => {
+    const input = [
+      "import { ChargeSource } from '@prismabox/enums';",
+      "import { PaymentMode } from '@prismabox/enums';",
+      "import { FeeStatus } from '@prismabox/enums';",
+      "const x = 1;",
+    ].join("\n");
+
+    const result = mergeDuplicateImports(input);
+
+    expect(result.content).toBe(
+      "import { ChargeSource, PaymentMode, FeeStatus } from '@prismabox/enums';\nconst x = 1;",
+    );
+  });
+
+  test("keeps type-only and value imports separate", () => {
+    const input = [
+      "import type { T } from './e';",
+      "import { V } from './e';",
+      "import type { U } from './e';",
+    ].join("\n");
+
+    const result = mergeDuplicateImports(input);
+
+    expect(result.content).toContain("import type { T, U } from './e';");
+    expect(result.content).toContain("import { V } from './e';");
+  });
+
+  test("preserves aliased specifiers and drops exact duplicates", () => {
+    expect(
+      mergeDuplicateImports("import { A as B } from './e';\nimport { C } from './e';").content,
+    ).toBe("import { A as B, C } from './e';");
+
+    expect(
+      mergeDuplicateImports("import { A } from './e';\nimport { A } from './e';").content,
+    ).toBe("import { A } from './e';");
+  });
+
+  test("leaves default, namespace, and single imports alone", () => {
+    const untouched = [
+      "import D from './e';\nimport { A } from './e';",
+      "import * as N from './e';\nimport { A } from './e';",
+      "import { A } from './a';\nimport { B } from './b';",
+    ];
+
+    for (const input of untouched) {
+      expect(mergeDuplicateImports(input).content).toBe(input);
+    }
+  });
 });
 
 describe("migrateSourceImports", () => {
@@ -213,14 +330,15 @@ describe("migrateSourceImports", () => {
     expect(result.content).toContain('require("./generated/schema/models/User")');
   });
 
-  test("swaps the legacy typebox package", () => {
+  test("leaves TypeBox imports untouched", () => {
+    // Which TypeBox package to import from is the user's call, so the codemod
+    // must not rewrite it in either direction.
     const input =
       'import { Type } from "@sinclair/typebox";\nimport { Value } from "@sinclair/typebox/value";';
     const result = migrateSourceImports(input, "schema", enums);
 
-    expect(result.content).toContain('from "typebox"');
-    expect(result.content).toContain('from "typebox/value"');
-    expect(result.content).not.toContain("@sinclair");
+    expect(result.content).toBe(input);
+    expect(result.changes).toHaveLength(0);
   });
 
   test("leaves unrelated source untouched", () => {
@@ -241,7 +359,7 @@ describe("migrateSourceImports", () => {
 });
 
 describe("migratePackageJson", () => {
-  test("swaps the dependencies", () => {
+  test("swaps prismabox for prismatype", () => {
     const input = JSON.stringify(
       {
         name: "app",
@@ -255,21 +373,35 @@ describe("migratePackageJson", () => {
     const result = migratePackageJson(input, VERSIONS);
     const parsed = JSON.parse(result.content);
 
-    expect(parsed.dependencies["@sinclair/typebox"]).toBeUndefined();
     expect(parsed.devDependencies.prismabox).toBeUndefined();
     expect(parsed.devDependencies.prismatype).toBe(VERSIONS.prismatype);
-    expect(parsed.dependencies.typebox).toBe(VERSIONS.typebox);
     // untouched entries survive
     expect(parsed.dependencies.zod).toBe("^3.0.0");
     expect(parsed.devDependencies.prisma).toBe("^7.0.0");
   });
 
-  test("does not relocate an already-declared dependency", () => {
+  test("leaves TypeBox dependencies to the user", () => {
+    // The codemod neither removes @sinclair/typebox nor installs typebox:
+    // choosing the TypeBox package and version is the user's decision.
     const input = JSON.stringify(
-      { name: "app", dependencies: { prismatype: "^1.0.0", typebox: "^1.0.0" } },
+      {
+        name: "app",
+        dependencies: { "@sinclair/typebox": "^0.34.0" },
+        devDependencies: { prismabox: "^1.0.0" },
+      },
       null,
       2,
     );
+
+    const parsed = JSON.parse(migratePackageJson(input, VERSIONS).content);
+
+    expect(parsed.dependencies["@sinclair/typebox"]).toBe("^0.34.0");
+    expect(parsed.dependencies.typebox).toBeUndefined();
+    expect(parsed.devDependencies.typebox).toBeUndefined();
+  });
+
+  test("does not relocate an already-declared dependency", () => {
+    const input = JSON.stringify({ name: "app", dependencies: { prismatype: "^1.0.0" } }, null, 2);
 
     const result = migratePackageJson(input, VERSIONS);
 

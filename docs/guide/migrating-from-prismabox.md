@@ -52,15 +52,25 @@ npx prismatype migrate --dry-run   # preview
 npx prismatype migrate             # apply
 ```
 
-It handles the four mechanical steps below:
+It handles the mechanical, prismabox-specific parts of the migration:
 
 - **`schema.prisma`**: renames the generator block and its `provider`, and rewrites
   every `@prismabox.*` annotation to `@prismatype.*`.
 - **Imports of the generated output**: per-enum imports collapse to the shared
   `enums` file, model imports move under `models/`, and `barrel` becomes `model`.
-  Any lingering `@sinclair/typebox` import is repointed at `typebox`.
-- **`package.json`**: removes `prismabox` and `@sinclair/typebox`, adds `prismatype`
-  and `typebox`.
+  Imports written through a tsconfig path alias are rewritten too: if `paths`
+  maps `"@prismabox/*"` to your output directory, `@prismabox/Section` becomes
+  `@prismabox/models/Section`.
+- **Duplicate imports**: because every per-enum file collapses into one shared
+  `enums` module, five separate enum imports become five imports of the same
+  module. Those are merged into a single statement. Type-only imports are merged
+  separately from value imports, and default, namespace, and multi-line imports
+  are left alone.
+- **`package.json`**: removes `prismabox` and adds `prismatype`.
+
+TypeBox is deliberately out of scope. The codemod never adds, removes, or
+rewrites a TypeBox dependency or import, so which package you depend on (and at
+which version) stays your decision. Step 1 below covers that swap by hand.
 
 Two behaviors are worth knowing about:
 

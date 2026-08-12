@@ -12,12 +12,6 @@ export const PRISMABOX_DEFAULT_OUTPUT = "./prisma/prismabox";
 /** The filename prismabox emits as its re-export barrel. */
 export const PRISMABOX_BARREL_FILE_NAME = "barrel";
 
-/** The TypeBox 0.x package prismabox imports from. */
-export const TYPEBOX_LEGACY_PACKAGE = "@sinclair/typebox";
-
-/** The TypeBox 1.x package PrismaType imports from. */
-export const TYPEBOX_PACKAGE = "typebox";
-
 export type Change = {
   /** One-line, human-readable summary of what was rewritten. */
   description: string;
@@ -178,25 +172,37 @@ export function migrateSchema(content: string): SchemaMigration {
  * - per-model files moved down into a `models/` subdirectory
  * - `barrel.ts` renamed to `model.ts`
  *
- * `outputBaseName` is the last path segment of the configured output dir (e.g.
- * `schema` for `./generated/schema`); it is what anchors a relative specifier
- * like `../generated/schema/Post` to the generated tree.
+ * `outputAnchors` is the set of path fragments that identify the generated tree:
+ * the output directory's own name (e.g. `schema` for `./generated/schema`), plus
+ * any tsconfig alias that resolves to it (e.g. `@prismabox`). When several
+ * anchors match, the longest wins so an aliased path keeps its full prefix.
  */
 export function migrateImportSpecifier(
   specifier: string,
-  outputBaseName: string,
+  outputAnchors: ReadonlySet<string> | string,
   enumNames: ReadonlySet<string>,
 ): string | undefined {
-  const anchor = escapeRegExp(outputBaseName);
-  // Capture everything up to and including the output dir, then the trailing
-  // path inside it. Anything without a trailing segment is already root-level.
-  const match = specifier.match(new RegExp(`^(.*(?:^|/)${anchor})/(.+)$`));
-  if (!match) {
-    return undefined;
+  const anchors = typeof outputAnchors === "string" ? [outputAnchors] : Array.from(outputAnchors);
+
+  // Try every known anchor and keep the longest match. A tsconfig alias that
+  // points straight at the output dir (e.g. "@prismabox" -> generated/prismabox)
+  // has no leading segment, so `(?:^|/)` must be able to match at position 0;
+  // preferring the longest prefix keeps "@generated/prismabox" from being
+  // matched on the shorter bare "prismabox" anchor alone.
+  let prefix: string | undefined;
+  let rest: string | undefined;
+
+  for (const anchor of anchors) {
+    const match = specifier.match(new RegExp(`^(.*(?:^|/)${escapeRegExp(anchor)})/(.+)$`));
+    if (match && (prefix === undefined || (match[1]?.length ?? 0) > prefix.length)) {
+      prefix = match[1];
+      rest = match[2];
+    }
   }
 
-  const prefix = match[1];
-  const rest = match[2] ?? "";
+  if (prefix === undefined || rest === undefined) {
+    return undefined;
+  }
 
   // Preserve an explicit extension (".js" under nodenext) across the rewrite.
   const extensionMatch = rest.match(/\.(js|ts|jsx|tsx|mjs|cjs)$/);
@@ -231,7 +237,8 @@ export function migrateImportSpecifier(
 
 /**
  * Rewrites every import/export specifier in a TS/JS source file that points at
- * the generated output directory, plus any lingering `@sinclair/typebox` import.
+ * the generated output directory. TypeBox imports are deliberately untouched:
+ * which TypeBox package to import from is the user's decision.
  *
  * Matching is done on the specifier string inside import/export/`require`/dynamic
  * -import syntax rather than by parsing, which keeps the codemod dependency-free
@@ -239,7 +246,7 @@ export function migrateImportSpecifier(
  */
 export function migrateSourceImports(
   content: string,
-  outputBaseName: string,
+  outputAnchors: ReadonlySet<string> | string,
   enumNames: ReadonlySet<string>,
 ): TransformResult {
   const changes: Change[] = [];
@@ -256,7 +263,7 @@ export function migrateSourceImports(
   result = result.replaceAll(
     specifierPattern,
     (whole, lead: string, quote: string, specifier: string) => {
-      const rewritten = migrateImportSpecifier(specifier, outputBaseName, enumNames);
+      const rewritten = migrateImportSpecifier(specifier, outputAnchors, enumNames);
       if (rewritten === undefined) {
         return whole;
       }
@@ -281,22 +288,119 @@ export function migrateSourceImports(
     barrelRewrites,
   );
 
-  const typeboxPattern = new RegExp(
-    `(["'])${escapeRegExp(TYPEBOX_LEGACY_PACKAGE)}((?:/[^"']*)?)\\1`,
-    "g",
-  );
-  const typeboxCount = countMatches(result, typeboxPattern);
-  if (typeboxCount > 0) {
-    result = result.replaceAll(typeboxPattern, `$1${TYPEBOX_PACKAGE}$2$1`);
-    pushChange(changes, `"${TYPEBOX_LEGACY_PACKAGE}" -> "${TYPEBOX_PACKAGE}"`, typeboxCount);
-  }
+  // Collapsing per-enum files into one shared `enums` module turns N separate
+  // enum imports into N imports of the same module, so merge them.
+  const merged = mergeDuplicateImports(result);
+  result = merged.content;
+  changes.push(...merged.changes);
 
   return { content: result, changes };
 }
 
 /**
- * Swaps the dependencies in a parsed package.json: drops prismabox and TypeBox
- * 0.x, adds prismatype (dev) and typebox (runtime).
+ * Merges repeated plain named imports from the same module into one statement.
+ *
+ * Only the simplest, unambiguous shape is merged: single-line
+ * `import { A, B } from "x";` statements with no default or namespace binding.
+ * Type-only imports are merged separately from value imports so
+ * `import type` never absorbs a value binding (or vice versa), and anything
+ * else (default imports, `import * as`, side-effect imports, multi-line
+ * statements) is left untouched.
+ */
+export function mergeDuplicateImports(content: string): TransformResult {
+  const changes: Change[] = [];
+
+  // A whole-line named import: optional `type`, a braced clause with no nested
+  // braces, and a quoted module. Anchored per line so multi-line imports and
+  // any statement sharing a line are skipped.
+  const namedImport =
+    /^([^\S\n]*)import\s+(type\s+)?\{([^{}]*)\}\s*from\s*(["'])([^"']+)\4;?[^\S\n]*$/;
+
+  const lines = content.split("\n");
+  // Grouped by module, then by kind, so value and type imports of the same
+  // module never merge into each other. Nesting the maps keeps the module name
+  // an untouched key rather than packing two values into one string.
+  const groups = new Map<
+    string,
+    Map<"type" | "value", { indices: number[]; specifiers: string[] }>
+  >();
+
+  lines.forEach((line, index) => {
+    const match = line.match(namedImport);
+    if (!match) {
+      return;
+    }
+
+    const moduleName = match[5];
+    if (moduleName === undefined) {
+      return;
+    }
+
+    const kind: "type" | "value" = match[2] ? "type" : "value";
+    const specifiers = (match[3] ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    const byKind =
+      groups.get(moduleName) ??
+      new Map<"type" | "value", { indices: number[]; specifiers: string[] }>();
+    const group = byKind.get(kind) ?? { indices: [], specifiers: [] };
+    group.indices.push(index);
+    group.specifiers.push(...specifiers);
+    byKind.set(kind, group);
+    groups.set(moduleName, byKind);
+  });
+
+  const removed = new Set<number>();
+  let mergedCount = 0;
+
+  for (const [moduleName, byKind] of groups) {
+    for (const [kind, group] of byKind) {
+      if (group.indices.length < 2) {
+        continue;
+      }
+
+      const first = group.indices[0];
+      if (first === undefined) {
+        continue;
+      }
+
+      // Deduplicate while preserving first-seen order, so `A, A` becomes `A`.
+      const unique = Array.from(new Set(group.specifiers));
+      const source = lines[first] ?? "";
+      const indent = source.match(/^[^\S\n]*/)?.[0] ?? "";
+      const quote = source.includes("'") ? "'" : '"';
+      const semicolon = source.trimEnd().endsWith(";") ? ";" : "";
+      const typeKeyword = kind === "type" ? "type " : "";
+
+      lines[first] =
+        `${indent}import ${typeKeyword}{ ${unique.join(", ")} } from ${quote}${moduleName}${quote}${semicolon}`;
+
+      for (const index of group.indices.slice(1)) {
+        removed.add(index);
+      }
+
+      mergedCount += group.indices.length - 1;
+    }
+  }
+
+  if (mergedCount === 0) {
+    return { content, changes };
+  }
+
+  pushChange(changes, "merged duplicate imports of the same module", mergedCount);
+
+  return { content: lines.filter((_, index) => !removed.has(index)).join("\n"), changes };
+}
+
+/**
+ * Swaps the generator dependency in a package.json: drops prismabox and adds
+ * prismatype as a dev dependency.
+ *
+ * TypeBox is deliberately left alone. Which TypeBox package a project depends
+ * on (and at which version) is the user's call, so the codemod neither removes
+ * `@sinclair/typebox` nor installs `typebox`.
  *
  * Operates on the raw text so key order, indentation, and any comments-free
  * formatting the user has are preserved as much as JSON round-tripping allows.
@@ -304,7 +408,7 @@ export function migrateSourceImports(
  */
 export function migratePackageJson(
   content: string,
-  versions: { prismatype: string; typebox: string },
+  versions: { prismatype: string },
 ): TransformResult {
   const changes: Change[] = [];
   let parsed: Record<string, unknown>;
@@ -325,15 +429,13 @@ export function migratePackageJson(
     }
 
     const record = deps as Record<string, string>;
-    for (const name of ["prismabox", TYPEBOX_LEGACY_PACKAGE]) {
-      if (name in record) {
-        delete record[name];
-        removed++;
-      }
+    if ("prismabox" in record) {
+      delete record.prismabox;
+      removed++;
     }
   }
 
-  pushChange(changes, `removed prismabox / ${TYPEBOX_LEGACY_PACKAGE}`, removed);
+  pushChange(changes, "removed prismabox", removed);
 
   // Only add what isn't already declared somewhere, so re-running the codemod
   // doesn't move a dependency the user deliberately placed.
@@ -352,14 +454,7 @@ export function migratePackageJson(
     added++;
   }
 
-  if (!declaredIn(TYPEBOX_PACKAGE)) {
-    const runtime = (parsed.dependencies ??= {}) as Record<string, string>;
-    runtime[TYPEBOX_PACKAGE] = versions.typebox;
-    parsed.dependencies = sortKeys(runtime);
-    added++;
-  }
-
-  pushChange(changes, `added prismatype / ${TYPEBOX_PACKAGE}`, added);
+  pushChange(changes, "added prismatype", added);
 
   if (changes.length === 0) {
     return { content, changes };

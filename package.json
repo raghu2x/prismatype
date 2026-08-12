@@ -1,6 +1,6 @@
 {
   "name": "prismatype",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": false,
   "description": "Typebox generator for prisma schema",
   "keywords": [
