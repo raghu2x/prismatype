@@ -43,6 +43,44 @@ Before migrating, make sure your project meets PrismaType's minimums:
 - **TypeBox** 1.x or newer (the unscoped `typebox` package, or a package that re-exports
   the 1.x API, such as Elysia 2)
 
+## Automated migration (codemod)
+
+Most of this guide is mechanical, so PrismaType ships a codemod that does it for you:
+
+```bash
+npx prismatype migrate --dry-run   # preview
+npx prismatype migrate             # apply
+```
+
+It handles the four mechanical steps below:
+
+- **`schema.prisma`**: renames the generator block and its `provider`, and rewrites
+  every `@prismabox.*` annotation to `@prismatype.*`.
+- **Imports of the generated output**: per-enum imports collapse to the shared
+  `enums` file, model imports move under `models/`, and `barrel` becomes `model`.
+  Any lingering `@sinclair/typebox` import is repointed at `typebox`.
+- **`package.json`**: removes `prismabox` and `@sinclair/typebox`, adds `prismatype`
+  and `typebox`.
+
+Two behaviors are worth knowing about:
+
+- If your generator block never set `output`, the codemod writes the old prismabox
+  default (`./prisma/prismabox`) in explicitly. The two generators have different
+  defaults, so pinning the old one keeps your existing import paths working. Rename
+  the directory later if you'd rather not have "prismabox" in the path.
+- It **requires a clean git working tree** so you can always undo it with
+  `git checkout .`. Use `--force` to override, or `--dry-run` to preview.
+
+| Flag          | Effect                                        |
+| ------------- | --------------------------------------------- |
+| `--dry-run`   | Print the changes without writing them        |
+| `--force`     | Write even if the git working tree is dirty   |
+| `--cwd <dir>` | Project root to migrate (defaults to the cwd) |
+
+The codemod does **not** install packages or regenerate. After it runs, install your
+dependencies, run `npx prisma generate`, and typecheck to catch anything it could not
+resolve. The steps below document what it does (and what to do by hand if you skip it).
+
 ## Migration steps
 
 ### 1. Swap the dependencies
