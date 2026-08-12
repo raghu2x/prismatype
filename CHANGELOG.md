@@ -5,10 +5,21 @@ All notable changes to PrismaType are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.2.0] - unreleased
+## [1.2.0] - 2026-08-12
 
 ### Added
 
+- **`prismatype migrate`** codemod that automates the mechanical parts of migrating
+  from prismabox. It renames the generator block and its `provider`, rewrites
+  `@prismabox.*` annotations to `@prismatype.*`, updates imports of the generated
+  output (per-enum imports collapse to the shared `enums` file, model imports move
+  under `models/`, `barrel` becomes `model`, and `@sinclair/typebox` is repointed at
+  `typebox`), and swaps the `package.json` dependencies. When a generator block never
+  set `output`, the old prismabox default (`./prisma/prismabox`) is pinned explicitly
+  so existing import paths keep working rather than silently relocating. Writing
+  requires a clean git working tree (`--force` overrides, `--dry-run` previews);
+  installing dependencies and regenerating are left to you. See
+  [Migrating from prismabox](/guide/migrating-from-prismabox#automated-migration-codemod).
 - **`deriveDbStringConstraints`** generator option (default `false`). When enabled,
   length-bearing native column types (`@db.VarChar(n)`, `@db.Char(n)` and their
   provider variants) contribute a `maxLength: n` constraint to the generated string

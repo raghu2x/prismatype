@@ -8,7 +8,7 @@ import {
   migrateSourceImports,
 } from "../src/migrate/transforms";
 
-const VERSIONS = { prismatype: "^1.1.0", typebox: "^1.3.7" };
+const VERSIONS = { prismatype: "^1.2.0", typebox: "^1.3.7" };
 
 describe("migrateSchema", () => {
   test("renames the generator block, provider, and annotations", () => {
