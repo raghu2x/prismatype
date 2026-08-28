@@ -1,7 +1,7 @@
 # PrismaType
 
 [![npm version](https://img.shields.io/npm/v/prismatype.svg?logo=npm)](https://www.npmjs.com/package/prismatype)
-[![CI](https://github.com/raghu2x/prismatype/actions/workflows/pull_request.yml/badge.svg)](https://github.com/raghu2x/prismatype/actions/workflows/pull_request.yml)
+[![CI](https://github.com/raghu2x/prismatype/actions/workflows/ci.yml/badge.svg)](https://github.com/raghu2x/prismatype/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-ready-3178C6.svg?logo=typescript)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
