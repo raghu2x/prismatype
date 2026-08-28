@@ -1,0 +1,50 @@
+version: 2
+
+updates:
+  # Bun's bun.lock is handled by the npm ecosystem.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    # Let a release settle before opening a PR for it.
+    cooldown:
+      default-days: 7
+    groups:
+      dev-dependencies:
+        dependency-type: development
+        update-types:
+          - minor
+          - patch
+      prod-dependencies:
+        dependency-type: production
+        update-types:
+          - minor
+          - patch
+    ignore:
+      # Prisma majors need a coordinated bump: @prisma/client, prisma and
+      # @prisma/generator-helper must move together, and the DMMF shape
+      # can change. Handle those by hand.
+      - dependency-name: prisma
+        update-types: [version-update:semver-major]
+      - dependency-name: "@prisma/client"
+        update-types: [version-update:semver-major]
+      - dependency-name: "@prisma/generator-helper"
+        update-types: [version-update:semver-major]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: ci
+    groups:
+      github-actions:
+        patterns:
+          - "*"

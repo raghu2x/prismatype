@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: Publish to npm
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/prismatype
+    permissions:
+      contents: read
+      # Required for npm trusted publishing (OIDC) and provenance.
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # Trusted publishing is an npm CLI feature, so publishing runs on
+      # Node/npm even though the rest of the pipeline uses Bun.
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Upgrade npm
+        # Trusted publishing requires npm >= 11.5.1.
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Build
+        run: bun run build
+
+      - name: Verify release tag matches package.json
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p "require('./package.json').version")"
+          if [[ "$tag" != "$pkg" ]]; then
+            echo "::error::Release tag v$tag does not match package.json version $pkg"
+            exit 1
+          fi
+
+      - name: Resolve dist-tag
+        id: tag
+        run: |
+          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+            echo "tag=next" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish
+        run: npm publish --provenance --access public --tag "${{ steps.tag.outputs.tag }}"
